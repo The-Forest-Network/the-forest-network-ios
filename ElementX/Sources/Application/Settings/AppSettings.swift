@@ -188,9 +188,9 @@ final class AppSettings: @unchecked Sendable {
     ///
     /// Account provider is the friendly term for the server name. It should not contain an `https` prefix and should
     /// match the last part of the user ID. For example `example.com` and not `https://matrix.example.com`.
-    private(set) var accountProviders = ["matrix.org"]
+    private(set) var accountProviders = ["matrix.theforestnetwork.earth"]
     /// Whether or not the user is allowed to manually enter their own account provider or must select from one of `defaultAccountProviders`.
-    private(set) var allowOtherAccountProviders = true
+    private(set) var allowOtherAccountProviders = false
     /// Whether the components surrounding the app brand/logo should be hidden or not
     private(set) var hideBrandChrome = false
     
@@ -198,15 +198,15 @@ final class AppSettings: @unchecked Sendable {
     let backgroundAppRefreshTaskIdentifier = "io.element.elementx.background.refresh"
     
     /// A URL where users can go read more about the app.
-    private(set) var websiteURL: URL = "https://element.io"
+    private(set) var websiteURL: URL = "https://theforestnetwork.earth"
     /// A URL that contains the app's logo that may be used when showing content in a web view.
-    private(set) var logoURL: URL = "https://element.io/mobile-icon.png"
+    private(set) var logoURL: URL = "https://theforestnetwork.earth/mobile-icon.png"
     /// A URL that contains that app's copyright notice.
-    private(set) var copyrightURL: URL = "https://element.io/copyright"
+    private(set) var copyrightURL: URL = "https://theforestnetwork.earth/copyright"
     /// A URL that contains the app's Terms of use.
-    private(set) var acceptableUseURL: URL = "https://element.io/acceptable-use-policy-terms"
+    private(set) var acceptableUseURL: URL = "https://theforestnetwork.earth/acceptable-use"
     /// A URL that contains the app's Privacy Policy.
-    private(set) var privacyURL: URL = "https://element.io/privacy"
+    private(set) var privacyURL: URL = "https://theforestnetwork.earth/privacy"
     /// A URL where users can go read more about encryption in general.
     private(set) var encryptionURL: URL = "https://element.io/help#encryption"
     /// A URL where users can go read more about device verification..

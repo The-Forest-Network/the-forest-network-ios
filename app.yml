@@ -1,10 +1,10 @@
 settings:
-  APP_DISPLAY_NAME: Element X
-  PRODUCTION_APP_NAME: Element
-  APP_GROUP_IDENTIFIER: group.io.element
-  BASE_BUNDLE_IDENTIFIER: io.element.elementx
+  APP_DISPLAY_NAME: The Forest Network
+  PRODUCTION_APP_NAME: The Forest Network
+  APP_GROUP_IDENTIFIER: group.earth.theforestnetwork
+  BASE_BUNDLE_IDENTIFIER: earth.theforestnetwork.ios
   ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: "colors/accent-color"
-  DEVELOPMENT_TEAM: 7J4U792NQT
+  DEVELOPMENT_TEAM: TODO_REPLACE_WITH_YOUR_APPLE_TEAM_ID
 
   # Optional configuration to load accounts from Element Classic.
   CLASSIC_APP_GROUP_IDENTIFIER: group.im.vector
