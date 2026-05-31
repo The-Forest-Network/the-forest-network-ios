@@ -31,29 +31,29 @@ final class AuthenticationStartScreenViewModelTests {
     
     @Test
     func initialState() async throws {
-        // Given a view model that has no provisioning parameters.
-        await setupViewModel()
+        // Given a view model locked to a single password-auth provider (our fork's default).
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel(supportsOAuth: false)
         #expect(authenticationService.homeserver.value.loginMode == .unknown)
         #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
         
-        // When tapping any of the buttons on the screen
-        let actions: [(AuthenticationStartScreenViewAction, AuthenticationStartScreenViewModelAction)] = [
+        // When tapping non-login buttons they should emit immediately without configuring a server.
+        for (viewAction, expectedAction): (AuthenticationStartScreenViewAction, AuthenticationStartScreenViewModelAction) in [
             (.loginWithQR, .loginWithQR),
-            (.login, .login),
-            (.register, .register),
             (.reportProblem, .reportProblem)
-        ]
-        
-        for action in actions {
-            let deferred = deferFulfillment(viewModel.actions) { $0 == action.1 }
-            context.send(viewAction: action.0)
+        ] {
+            let deferred = deferFulfillment(viewModel.actions) { $0 == expectedAction }
+            context.send(viewAction: viewAction)
             try await deferred.fulfill()
-            
-            // Then the authentication service should not be used yet.
-            #expect(clientFactory.makeClientHomeserverAddressSessionDirectoriesPassphraseClientSessionDelegateAppSettingsAppHooksCallsCount == 0)
-            #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
-            #expect(authenticationService.homeserver.value.loginMode == .unknown)
         }
+        
+        // When tapping login the single locked provider is auto-configured and the password flow begins.
+        let deferred = deferFulfillment(viewModel.actions) { $0.isLoginDirectlyWithPassword }
+        context.send(viewAction: .login)
+        try await deferred.fulfill()
+        
+        #expect(clientFactory.makeClientHomeserverAddressSessionDirectoriesPassphraseClientSessionDelegateAppSettingsAppHooksCallsCount == 1)
+        #expect(authenticationService.homeserver.value.loginMode == .password)
     }
     
     @Test

@@ -2428,15 +2428,11 @@ internal enum L10n {
   internal static var screenOnboardingSignUp: String { return L10n.tr("Localizable", "screen_onboarding_sign_up") }
   /// Welcome back
   internal static var screenOnboardingWelcomeBack: String { return L10n.tr("Localizable", "screen_onboarding_welcome_back") }
-  /// Welcome to the fastest %1$@ ever. Supercharged for speed and simplicity.
-  internal static func screenOnboardingWelcomeMessage(_ p1: Any) -> String {
-    return L10n.tr("Localizable", "screen_onboarding_welcome_message", String(describing: p1))
-  }
-  /// Welcome to %1$@. Supercharged, for speed and simplicity.
-  internal static func screenOnboardingWelcomeSubtitle(_ p1: Any) -> String {
-    return L10n.tr("Localizable", "screen_onboarding_welcome_subtitle", String(describing: p1))
-  }
-  /// Be in your element
+  /// A global digital village for beings engaged in nature & soul work
+  internal static var screenOnboardingWelcomeMessage: String { return L10n.tr("Localizable", "screen_onboarding_welcome_message") }
+  /// A global digital village for beings engaged in nature & soul work
+  internal static var screenOnboardingWelcomeSubtitle: String { return L10n.tr("Localizable", "screen_onboarding_welcome_subtitle") }
+  /// Welcome to The Forest Network
   internal static var screenOnboardingWelcomeTitle: String { return L10n.tr("Localizable", "screen_onboarding_welcome_title") }
   /// Press on a message and choose “%1$@” to include here.
   internal static func screenPinnedTimelineEmptyStateDescription(_ p1: Any) -> String {
