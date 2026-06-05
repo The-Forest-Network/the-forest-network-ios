@@ -24,35 +24,35 @@ struct AuthenticationStartScreenBackgroundImage: View {
     }
     
     private let lightColors: [Color] = [
-        // top row — sampled from original asset
-        Color(red: 0.894, green: 0.957, blue: 0.976), // #e4f4f9
-        Color(red: 0.859, green: 0.922, blue: 0.973), // #dbebf8
-        Color(red: 0.910, green: 0.937, blue: 0.984), // #e8effb
-        // mid row — sampled from original asset
-        Color(red: 0.255, green: 0.765, blue: 0.839), // #41c3d6 cyan left
-        Color(red: 0.271, green: 0.655, blue: 0.851), // #45a7d9 periwinkle centre
-        Color(red: 0.282, green: 0.565, blue: 0.863), // #4890dc blue right
-        // fade row — sampled from original asset
-        Color(red: 0.820, green: 0.965, blue: 0.957), // #d1f6f4
-        Color(red: 0.882, green: 0.953, blue: 0.976), // #e1f3f9
-        Color(red: 0.910, green: 0.950, blue: 0.980), // #e8f2fa
+        // top row — 90% toward white
+        Color(red: 0.945, green: 0.918, blue: 0.929), // plum tint
+        Color(red: 0.955, green: 0.947, blue: 0.924), // blend
+        Color(red: 0.976, green: 0.965, blue: 0.918), // gold tint
+        // mid row — brand colours
+        Color(red: 0.463, green: 0.180, blue: 0.267), // #762e44 red wine plum left
+        Color(red: 0.541, green: 0.396, blue: 0.220), // #8a6538 amber centre
+        Color(red: 0.769, green: 0.627, blue: 0.188), // #c4a030 gold right
+        // fade row — 90% toward white
+        Color(red: 0.945, green: 0.918, blue: 0.929), // plum tint
+        Color(red: 0.955, green: 0.947, blue: 0.924), // blend
+        Color(red: 0.976, green: 0.965, blue: 0.918), // gold tint
         // bottom row — white
         Color.white, Color.white, Color.white
     ]
     
     private let darkColors: [Color] = [
-        // top row — sampled from original asset
-        Color(red: 0.000, green: 0.075, blue: 0.102), // #00131a
-        Color(red: 0.000, green: 0.071, blue: 0.141), // #001224
-        Color(red: 0.004, green: 0.035, blue: 0.098), // #010919
-        // mid row — sampled from original asset
-        Color(red: 0.004, green: 0.533, blue: 0.612), // #01889c teal left
-        Color(red: 0.004, green: 0.404, blue: 0.627), // #0167a0 centre
-        Color(red: 0.008, green: 0.298, blue: 0.647), // #024ca5 blue right
-        // fade row — sampled from original asset
-        Color(red: 0.004, green: 0.133, blue: 0.125), // #012220
-        Color(red: 0.004, green: 0.067, blue: 0.086), // #011116
-        Color(red: 0.004, green: 0.051, blue: 0.090), // #010d17
+        // top row — 90% toward black
+        Color(red: 0.047, green: 0.020, blue: 0.027), // plum tint
+        Color(red: 0.054, green: 0.044, blue: 0.025), // blend
+        Color(red: 0.078, green: 0.063, blue: 0.020), // gold tint
+        // mid row — brand colours at 70% brightness
+        Color(red: 0.325, green: 0.125, blue: 0.188), // #532030 dark red wine left
+        Color(red: 0.380, green: 0.278, blue: 0.154), // #614722 dark amber centre
+        Color(red: 0.537, green: 0.439, blue: 0.133), // #897022 dark gold right
+        // fade row — 90% toward black
+        Color(red: 0.047, green: 0.020, blue: 0.027), // plum tint
+        Color(red: 0.054, green: 0.044, blue: 0.025), // blend
+        Color(red: 0.078, green: 0.063, blue: 0.020), // gold tint
         // bottom row — black
         Color.black, Color.black, Color.black
     ]
