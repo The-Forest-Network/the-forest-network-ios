@@ -9730,7 +9730,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_DISPLAY_NAME = "The Forest Network";
+				APP_DISPLAY_NAME = "Forest Network";
 				APP_GROUP_IDENTIFIER = group.earth.theforestnetwork;
 				APP_NAME = ElementX;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "colors/accent-color";
@@ -9804,7 +9804,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_DISPLAY_NAME = "The Forest Network";
+				APP_DISPLAY_NAME = "Forest Network";
 				APP_GROUP_IDENTIFIER = group.earth.theforestnetwork;
 				APP_NAME = ElementX;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "colors/accent-color";
