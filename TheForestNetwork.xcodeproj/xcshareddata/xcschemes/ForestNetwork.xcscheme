@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0E28CD62691FDBC63147D5E3"
-               BuildableName = "UITests.xctest"
-               BlueprintName = "UITests"
-               ReferencedContainer = "container:ElementX.xcodeproj">
+               BlueprintIdentifier = "3165A68F2A075C40A49FCF42"
+               BuildableName = "ForestNetwork.app"
+               BlueprintName = "ForestNetwork"
+               ReferencedContainer = "container:TheForestNetwork.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -28,26 +28,36 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "NO">
+      codeCoverageEnabled = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "YES">
       <TestPlans>
          <TestPlanReference
             default = "YES"
-            reference = "container:UITests/SupportingFiles/UITests.xctestplan">
+            reference = "container:UnitTests/SupportingFiles/UnitTests.xctestplan">
          </TestPlanReference>
       </TestPlans>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0E28CD62691FDBC63147D5E3"
-            BuildableName = "UITests.xctest"
-            BlueprintName = "UITests"
-            ReferencedContainer = "container:ElementX.xcodeproj">
+            BlueprintIdentifier = "3165A68F2A075C40A49FCF42"
+            BuildableName = "ForestNetwork.app"
+            BlueprintName = "ForestNetwork"
+            ReferencedContainer = "container:TheForestNetwork.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "3165A68F2A075C40A49FCF42"
+            BuildableName = "ForestNetwork.app"
+            BlueprintName = "ForestNetwork"
+            ReferencedContainer = "container:TheForestNetwork.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -59,17 +69,35 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0E28CD62691FDBC63147D5E3"
-            BuildableName = "UITests.xctest"
-            BlueprintName = "UITests"
-            ReferencedContainer = "container:ElementX.xcodeproj">
+            BlueprintIdentifier = "3165A68F2A075C40A49FCF42"
+            BuildableName = "ForestNetwork.app"
+            BlueprintName = "ForestNetwork"
+            ReferencedContainer = "container:TheForestNetwork.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <CommandLineArguments>
       </CommandLineArguments>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "HTTPS_PROXY"
+            value = "localhost:9090"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UI_TESTS_SCREEN"
+            value = ""
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "RESET_APP_SETTINGS"
+            value = "true"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -77,17 +105,18 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <CommandLineArguments>
-      </CommandLineArguments>
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0E28CD62691FDBC63147D5E3"
-            BuildableName = "UITests.xctest"
-            BlueprintName = "UITests"
-            ReferencedContainer = "container:ElementX.xcodeproj">
+            BlueprintIdentifier = "3165A68F2A075C40A49FCF42"
+            BuildableName = "ForestNetwork.app"
+            BlueprintName = "ForestNetwork"
+            ReferencedContainer = "container:TheForestNetwork.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

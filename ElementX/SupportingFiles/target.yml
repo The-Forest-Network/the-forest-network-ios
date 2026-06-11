@@ -1,14 +1,14 @@
-name: ElementX
+name: ForestNetwork
 
 schemes:
-  ElementX:
+  ForestNetwork:
     analyze:
       config: Debug
     archive:
       config: Release
     build:
       targets:
-        ElementX:
+        ForestNetwork:
           - running
           - testing
           - profiling
@@ -32,13 +32,13 @@ schemes:
       config: Debug
       gatherCoverageData: true
       coverageTargets:
-        - ElementX
+        - ForestNetwork
       testPlans:
         - path: ../../UnitTests/SupportingFiles/UnitTests.xctestplan
           defaultPlan: true
 
 targets:
-  ElementX:
+  ForestNetwork:
     type: application
     platform: iOS
 

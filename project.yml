@@ -1,5 +1,5 @@
 ---
-name: ElementX
+name: TheForestNetwork
 attributes:
   ORGANIZATIONNAME: Element
   LastUpgradeCheck: "1620"
@@ -51,7 +51,7 @@ options:
 settings:
   CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: true
   ENABLE_BITCODE: false
-  APP_NAME: ElementX
+  APP_NAME: ForestNetwork
   KEYCHAIN_ACCESS_GROUP_IDENTIFIER: "$(DEVELOPMENT_TEAM).$(BASE_BUNDLE_IDENTIFIER)"
   MARKETING_VERSION: 26.06.0
   CURRENT_PROJECT_VERSION: 1
