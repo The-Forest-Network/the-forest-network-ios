@@ -2,7 +2,7 @@ settings:
   APP_DISPLAY_NAME: "Forest Network"
   PRODUCTION_APP_NAME: "The Forest Network"
   APP_GROUP_IDENTIFIER: group.earth.theforestnetwork
-  BASE_BUNDLE_IDENTIFIER: earth.theforestnetwork.ios
+  BASE_BUNDLE_IDENTIFIER: earth.theforestnetwork.village
   ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: "colors/accent-color"
   DEVELOPMENT_TEAM: 6NYJU44FZ6
 
