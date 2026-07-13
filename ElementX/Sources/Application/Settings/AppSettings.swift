@@ -272,7 +272,7 @@ final class AppSettings: @unchecked Sendable {
         #endif
     }
     
-    private(set) var pushGatewayBaseURL: URL = "http://tfn-sygnal:5000"
+    private(set) var pushGatewayBaseURL: URL = "https://sygnal.theforestnetwork.earth"
     var pushGatewayNotifyEndpoint: URL {
         pushGatewayBaseURL.appending(path: "_matrix/push/v1/notify")
     }
