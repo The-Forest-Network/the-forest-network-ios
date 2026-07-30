@@ -120,6 +120,12 @@ struct AuthenticationStartScreen: View {
                 .buttonStyle(.compound(.tertiary))
             }
             
+            Text(context.viewState.requestAccountMessage)
+                .font(.compound.bodySM)
+                .foregroundColor(.compound.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.top, 8)
+            
             versionText
                 .font(.compound.bodySM)
                 .foregroundColor(.compound.textSecondary)

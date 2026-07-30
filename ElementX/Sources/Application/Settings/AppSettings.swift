@@ -207,6 +207,8 @@ final class AppSettings: @unchecked Sendable {
     private(set) var acceptableUseURL: URL = "https://theforestnetwork.earth/acceptable-use"
     /// A URL that contains the app's Privacy Policy.
     private(set) var privacyURL: URL = "https://theforestnetwork.earth/privacy"
+    /// A URL where people without an account can request one, since accounts aren't self-served.
+    private(set) var requestAccountURL: URL = "https://theforestnetwork.earth/village/join"
     /// A URL where users can go read more about encryption in general.
     private(set) var encryptionURL: URL = "https://element.io/help#encryption"
     /// A URL where users can go read more about device verification..
