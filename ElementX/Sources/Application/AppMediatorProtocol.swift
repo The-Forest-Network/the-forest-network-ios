@@ -23,6 +23,9 @@ protocol AppMediatorProtocol {
     
     func open(_ url: URL)
     
+    /// Presents the given URL in an in-app Safari view controller, rather than switching to the Safari app.
+    func presentSafariViewController(with url: URL)
+    
     func openAppSettings()
     
     func setIdleTimerDisabled(_ disabled: Bool)

@@ -141,6 +141,10 @@ struct AuthenticationStartScreen: View {
         }
         .padding(.horizontal, verticalSizeClass == .compact ? 128 : 24)
         .readableFrame()
+        .environment(\.openURL, OpenURLAction { url in
+            context.send(viewAction: .openRequestAccountURL(url))
+            return .handled
+        })
     }
     
     var versionText: Text {

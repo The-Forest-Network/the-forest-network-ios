@@ -70,4 +70,5 @@ enum AuthenticationStartScreenViewAction {
     case otherOptions(ClassicAppAccount)
     case closeOtherOptions(ClassicAppAccount)
     case openClassicApp
+    case openRequestAccountURL(URL)
 }

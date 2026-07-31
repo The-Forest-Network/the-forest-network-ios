@@ -110,6 +110,8 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
         case .openClassicApp:
             guard let classicAppDeepLinkURL = InfoPlistReader.main.classicAppDeepLinkURL else { return }
             appMediator.open(classicAppDeepLinkURL)
+        case .openRequestAccountURL(let url):
+            appMediator.presentSafariViewController(with: url)
         }
     }
     
