@@ -16,14 +16,18 @@ setup_github_actions_environment() {
     export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
     
     brew update && brew install xcodegen swiftlint git-lfs pkl a7ex/homebrew-formulae/xcresultparser
-    install_swiftformat_head
+    install_swiftformat
 }
 
-install_swiftformat_head() {
-    if brew list --versions swiftformat &>/dev/null && ! brew list --versions swiftformat | grep -q HEAD; then
+install_swiftformat() {
+    # Pinned to the latest stable release instead of tracking --HEAD (upstream Element's
+    # approach). Tracking HEAD means CI can start failing with zero code changes whenever
+    # SwiftFormat's own unreleased rules change. Bump deliberately (reformatting the repo
+    # to match) as part of syncing formatting after an upstream merge, not automatically.
+    if brew list --versions swiftformat &>/dev/null && brew list --versions swiftformat | grep -q HEAD; then
         brew uninstall swiftformat
     fi
-    brew install swiftformat --HEAD
+    brew install swiftformat
 }
 
 setup_github_actions_translations_environment() {

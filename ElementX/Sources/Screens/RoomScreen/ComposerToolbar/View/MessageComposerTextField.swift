@@ -42,13 +42,11 @@ struct MessageComposerTextField: View {
     }
     
     private var keyboardShortcuts: some View {
-        Group {
-            Button("") {
-                keyHandler(.keyboardEscape)
-            }
-            // Need this to enable escape on the textView and forward the presses
-            .keyboardShortcut(.escape, modifiers: [])
+        Button("") {
+            keyHandler(.keyboardEscape)
         }
+        // Need this to enable escape on the textView and forward the presses
+        .keyboardShortcut(.escape, modifiers: [])
     }
 }
 
