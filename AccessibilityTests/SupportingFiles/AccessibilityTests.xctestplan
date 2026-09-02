@@ -15,9 +15,9 @@
     "codeCoverage" : {
       "targets" : [
         {
-          "containerPath" : "container:ElementX.xcodeproj",
-          "identifier" : "C0FAEB81CFD9776CD78CE489",
-          "name" : "ElementX"
+          "containerPath" : "container:TheForestNetwork.xcodeproj",
+          "identifier" : "3165A68F2A075C40A49FCF42",
+          "name" : "ForestNetwork"
         }
       ]
     },
@@ -32,8 +32,8 @@
     },
     "region" : "US",
     "targetForVariableExpansion" : {
-      "containerPath" : "container:ElementX.xcodeproj",
-      "identifier" : "C0C687DE1D270F9895FEE186",
+      "containerPath" : "container:TheForestNetwork.xcodeproj",
+      "identifier" : "6C4E340BBE772FADBF617DD9",
       "name" : "AccessibilityTests"
     },
     "testTimeoutsEnabled" : true,
@@ -42,8 +42,8 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:ElementX.xcodeproj",
-        "identifier" : "C0C687DE1D270F9895FEE186",
+        "containerPath" : "container:TheForestNetwork.xcodeproj",
+        "identifier" : "6C4E340BBE772FADBF617DD9",
         "name" : "AccessibilityTests"
       }
     }

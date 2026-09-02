@@ -7,7 +7,7 @@
 //
 
 import AnalyticsEvents
-@testable import ElementX
+@testable import ForestNetwork
 import PostHog
 import Testing
 

@@ -12,9 +12,9 @@
     "codeCoverage" : {
       "targets" : [
         {
-          "containerPath" : "container:ElementX.xcodeproj",
-          "identifier" : "C0FAEB81CFD9776CD78CE489",
-          "name" : "ElementX"
+          "containerPath" : "container:TheForestNetwork.xcodeproj",
+          "identifier" : "3165A68F2A075C40A49FCF42",
+          "name" : "ForestNetwork"
         }
       ]
     },
@@ -33,16 +33,16 @@
       }
     ],
     "targetForVariableExpansion" : {
-      "containerPath" : "container:ElementX.xcodeproj",
-      "identifier" : "D3DB351B7FBE0F49649171FC",
+      "containerPath" : "container:TheForestNetwork.xcodeproj",
+      "identifier" : "3BE97511D6D4C463E0862279",
       "name" : "IntegrationTests"
     }
   },
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:ElementX.xcodeproj",
-        "identifier" : "D3DB351B7FBE0F49649171FC",
+        "containerPath" : "container:TheForestNetwork.xcodeproj",
+        "identifier" : "3BE97511D6D4C463E0862279",
         "name" : "IntegrationTests"
       }
     }

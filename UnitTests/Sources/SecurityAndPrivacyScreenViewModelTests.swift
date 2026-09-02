@@ -7,7 +7,7 @@
 //
 
 import Combine
-@testable import ElementX
+@testable import ForestNetwork
 import MatrixRustSDK
 import Testing
 
@@ -438,7 +438,7 @@ final class SecurityAndPrivacyScreenViewModelTests {
     
     private func setupViewModel(joinedParentSpaces: [SpaceServiceRoom],
                                 topLevelSpaces: [SpaceServiceRoom] = [],
-                                joinRule: ElementX.JoinRule) {
+                                joinRule: ForestNetwork.JoinRule) {
         let appSettings = AppSettings.volatile()
         appSettings.knockingEnabled = true
         roomProxy = JoinedRoomProxyMock(.init(isEncrypted: false,

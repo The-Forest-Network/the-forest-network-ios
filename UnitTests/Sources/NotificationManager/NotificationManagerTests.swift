@@ -7,7 +7,7 @@
 //
 
 import Combine
-@testable import ElementX
+@testable import ForestNetwork
 import NotificationCenter
 import Testing
 
@@ -257,7 +257,7 @@ extension NotificationManagerTests: @MainActor NotificationManagerDelegate {
         notificationTappedDelegateCalled = true
     }
     
-    func handleInlineReply(_ service: ElementX.NotificationManagerProtocol, content: UNNotificationContent, replyText: String) async {
+    func handleInlineReply(_ service: ForestNetwork.NotificationManagerProtocol, content: UNNotificationContent, replyText: String) async {
         handleInlineReplyDelegateCalled = true
     }
 }

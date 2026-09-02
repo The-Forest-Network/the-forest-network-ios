@@ -45,8 +45,8 @@
     {
       "parallelizable" : false,
       "target" : {
-        "containerPath" : "container:ElementX.xcodeproj",
-        "identifier" : "7A17BE29BAC81ADBAC6349D9",
+        "containerPath" : "container:TheForestNetwork.xcodeproj",
+        "identifier" : "CDFD9E83F064E328521446B0",
         "name" : "PreviewTests"
       }
     }

@@ -7,7 +7,7 @@
 
 import Combine
 import CoreLocation
-@testable import ElementX
+@testable import ForestNetwork
 import Foundation
 import Testing
 

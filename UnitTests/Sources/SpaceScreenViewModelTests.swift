@@ -7,7 +7,7 @@
 //
 
 import Combine
-@testable import ElementX
+@testable import ForestNetwork
 import MatrixRustSDK
 import MatrixRustSDKMocks
 import Testing

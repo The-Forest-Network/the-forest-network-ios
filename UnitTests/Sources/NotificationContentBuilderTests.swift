@@ -6,7 +6,7 @@
 //
 
 import Dynamic
-@testable import ElementX
+@testable import ForestNetwork
 import MatrixRustSDK
 import Testing
 import UserNotifications
