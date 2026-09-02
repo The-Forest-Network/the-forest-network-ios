@@ -26,8 +26,8 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Cache Swift packages
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Restore Swift packages cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .build/SourcePackages
           key: spm-${{ runner.os }}-${{ hashFiles('project.yml', 'Package.swift', 'compound-ios/Package.swift') }}
@@ -38,6 +38,15 @@ jobs:
 
       - name: Run tests
         run: swift run -q tools ci unit-tests
+
+      - name: Save Swift packages cache
+        # PreviewTests currently has known pre-existing failures unrelated to this workflow,
+        # so the job frequently ends in failure — save regardless, or the cache never populates.
+        if: always()
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('project.yml', 'Package.swift', 'compound-ios/Package.swift') }}
 
       - name: Archive artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
