@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import MatrixRustSDKMocks
 import SwiftUI
 import Testing
@@ -318,7 +318,7 @@ final class ServerConfirmationScreenViewModelTests {
                                 supportsPasswordLogin: Bool = true,
                                 restrictedFlow: Bool = false,
                                 requiresElementPro: Bool = false) {
-        var mode = ServerConfirmationScreenMode.confirmation("matrix.org")
+        var mode = ServerConfirmationScreenMode.confirmation(appSettings.accountProviders[0])
         if restrictedFlow {
             appSettings.override(accountProviders: ["matrix.org", "beta.matrix.org"],
                                  allowOtherAccountProviders: false,
@@ -348,7 +348,7 @@ final class ServerConfirmationScreenViewModelTests {
                                      supportsOAuthCreatePrompt: supportsOAuthCreatePrompt,
                                      supportsPasswordLogin: supportsPasswordLogin,
                                      elementWellKnown: requiresElementPro ? "{\"version\":1,\"enforce_element_pro\":true}" : nil))
-        let configuration = AuthenticationClientFactoryMock.Configuration(homeserverClients: ["matrix.org": client])
+        let configuration = AuthenticationClientFactoryMock.Configuration(homeserverClients: [appSettings.accountProviders[0]: client])
         
         clientFactory = AuthenticationClientFactoryMock(configuration)
         service = AuthenticationService(userSessionStore: UserSessionStoreMock(.init()),

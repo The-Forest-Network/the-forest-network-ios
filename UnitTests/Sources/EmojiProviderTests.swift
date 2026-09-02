@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 import UIKit
 
@@ -92,8 +92,8 @@ struct EmojiProviderTests {
 }
 
 private class EmojiLoaderMock: EmojiLoaderProtocol {
-    var categories = [ElementX.EmojiCategory]()
-    func load() async -> [ElementX.EmojiCategory] {
+    var categories = [ForestNetwork.EmojiCategory]()
+    func load() async -> [ForestNetwork.EmojiCategory] {
         categories
     }
 }

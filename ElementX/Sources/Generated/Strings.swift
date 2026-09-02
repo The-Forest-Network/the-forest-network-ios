@@ -2428,7 +2428,7 @@ internal enum L10n {
   internal static var screenOnboardingSignUp: String { return L10n.tr("Localizable", "screen_onboarding_sign_up") }
   /// Welcome back
   internal static var screenOnboardingWelcomeBack: String { return L10n.tr("Localizable", "screen_onboarding_welcome_back") }
-  /// A global digital village for beings engaged in nature & soul work
+  /// A global Digital Village for beings engaged in nature & soul work
   internal static var screenOnboardingWelcomeMessage: String { return L10n.tr("Localizable", "screen_onboarding_welcome_message") }
   /// A global digital village for beings engaged in nature & soul work
   internal static var screenOnboardingWelcomeSubtitle: String { return L10n.tr("Localizable", "screen_onboarding_welcome_subtitle") }

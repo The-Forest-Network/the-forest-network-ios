@@ -1725,6 +1725,47 @@ class AppMediatorMock: AppMediatorProtocol, @unchecked Sendable {
         }
         openClosure?(url)
     }
+    //MARK: - presentSafariViewController
+
+    var presentSafariViewControllerWithUnderlyingCallsCount = 0
+    var presentSafariViewControllerWithCallsCount: Int {
+        get {
+            if Thread.isMainThread {
+                return presentSafariViewControllerWithUnderlyingCallsCount
+            } else {
+                var returnValue: Int? = nil
+                DispatchQueue.main.sync {
+                    returnValue = presentSafariViewControllerWithUnderlyingCallsCount
+                }
+
+                return returnValue!
+            }
+        }
+        set {
+            if Thread.isMainThread {
+                presentSafariViewControllerWithUnderlyingCallsCount = newValue
+            } else {
+                DispatchQueue.main.sync {
+                    presentSafariViewControllerWithUnderlyingCallsCount = newValue
+                }
+            }
+        }
+    }
+    var presentSafariViewControllerWithCalled: Bool {
+        return presentSafariViewControllerWithCallsCount > 0
+    }
+    var presentSafariViewControllerWithReceivedUrl: URL?
+    var presentSafariViewControllerWithReceivedInvocations: [URL] = []
+    var presentSafariViewControllerWithClosure: ((URL) -> Void)?
+
+    func presentSafariViewController(with url: URL) {
+        presentSafariViewControllerWithCallsCount += 1
+        presentSafariViewControllerWithReceivedUrl = url
+        DispatchQueue.main.async {
+            self.presentSafariViewControllerWithReceivedInvocations.append(url)
+        }
+        presentSafariViewControllerWithClosure?(url)
+    }
     //MARK: - openAppSettings
 
     var openAppSettingsUnderlyingCallsCount = 0

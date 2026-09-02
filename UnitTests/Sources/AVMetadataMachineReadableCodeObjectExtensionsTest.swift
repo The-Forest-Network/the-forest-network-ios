@@ -7,7 +7,7 @@
 //
 
 import AVKit
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 
 struct AVMetadataMachineReadableCodeObjectExtensionsTest {

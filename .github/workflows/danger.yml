@@ -23,6 +23,6 @@ jobs:
           persist-credentials: false
 
       - name: Danger
-        uses: danger/swift@434d7c25f3b02d490a340b23f5e78dd15a5670bc # 3.22.1
+        uses: danger/swift@53887414329bbf7deecde31f7d1d20bb15e6c4d3 # main, post-3.22.1: installs Node 24 (fixes undici v7 "File is not defined" crash on the Node 18 in 3.22.1)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

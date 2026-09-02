@@ -8,7 +8,7 @@
 
 import AsyncAlgorithms
 import Combine
-@testable import ElementX
+@testable import ForestNetwork
 import MatrixRustSDK
 import SwiftUI
 import Testing

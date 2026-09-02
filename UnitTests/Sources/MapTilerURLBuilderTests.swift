@@ -7,7 +7,7 @@
 //
 
 import CoreLocation
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 
 struct MapTilerURLBuilderTests {

@@ -44,6 +44,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
         let isQRCodeScanningSupported = !ProcessInfo.processInfo.isiOSAppOnMac
         let classicAppAccountProvider = authenticationService.classicAppAccount?.serverName
         let isClassicAppAccountAllowed = classicAppAccountProvider.map { appSettings.accountProviders.contains($0) } ?? false
+        let requestAccountMessage = Self.makeRequestAccountMessage(url: appSettings.requestAccountURL)
         
         let initialViewState = if !appSettings.allowOtherAccountProviders {
             // We don't show the create account button when custom providers are disallowed.
@@ -51,6 +52,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
             AuthenticationStartScreenViewState(serverName: appSettings.accountProviders.count == 1 ? appSettings.accountProviders[0] : nil,
                                                showCreateAccountButton: false,
                                                showQRCodeLoginButton: isQRCodeScanningSupported,
+                                               requestAccountMessage: requestAccountMessage,
                                                classicAppMode: isClassicAppAccountAllowed ? authenticationService.classicAppAccount.map { .welcomeBack($0) } : nil,
                                                hideBrandChrome: appSettings.hideBrandChrome)
         } else if let provisioningParameters {
@@ -58,6 +60,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
             AuthenticationStartScreenViewState(serverName: provisioningParameters.accountProvider,
                                                showCreateAccountButton: false,
                                                showQRCodeLoginButton: false,
+                                               requestAccountMessage: requestAccountMessage,
                                                classicAppMode: nil,
                                                hideBrandChrome: appSettings.hideBrandChrome)
         } else {
@@ -65,6 +68,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
             AuthenticationStartScreenViewState(serverName: nil,
                                                showCreateAccountButton: appSettings.showCreateAccountButton,
                                                showQRCodeLoginButton: isQRCodeScanningSupported,
+                                               requestAccountMessage: requestAccountMessage,
                                                classicAppMode: authenticationService.classicAppAccount.map { .welcomeBack($0) },
                                                hideBrandChrome: appSettings.hideBrandChrome)
         }
@@ -106,10 +110,22 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
         case .openClassicApp:
             guard let classicAppDeepLinkURL = InfoPlistReader.main.classicAppDeepLinkURL else { return }
             appMediator.open(classicAppDeepLinkURL)
+        case .openRequestAccountURL(let url):
+            appMediator.presentSafariViewController(with: url)
         }
     }
     
     // MARK: - Private
+    
+    private static func makeRequestAccountMessage(url: URL) -> AttributedString {
+        let linkPlaceholder = "{link}"
+        var message = AttributedString(UntranslatedL10n.screenOnboardingRequestAccountMessage(linkPlaceholder))
+        var link = AttributedString(UntranslatedL10n.screenOnboardingRequestAccountContentLink)
+        link.link = url
+        link.bold()
+        message.replace(linkPlaceholder, with: link)
+        return message
+    }
     
     private func login(classicAppAccount: ClassicAppAccount? = nil) async {
         if let classicAppAccount {

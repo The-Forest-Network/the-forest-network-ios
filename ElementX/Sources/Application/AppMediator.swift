@@ -7,9 +7,10 @@
 //
 
 import AVFoundation
+import SafariServices
 import UIKit
 
-class AppMediator: AppMediatorProtocol {
+class AppMediator: NSObject, AppMediatorProtocol {
     let windowManager: WindowManagerProtocol
     let networkMonitor: NetworkMonitorProtocol
     
@@ -48,6 +49,16 @@ class AppMediator: AppMediatorProtocol {
         application.open(url, options: [:], completionHandler: nil)
     }
     
+    func presentSafariViewController(with url: URL) {
+        let safariViewController = SFSafariViewController(url: url)
+        safariViewController.modalPresentationStyle = .fullScreen
+        // SFSafariViewController uses its own custom (push-like) transition unless a
+        // transitioning delegate is set, regardless of modalPresentationStyle/modalTransitionStyle.
+        // Setting this (even with no methods implemented) restores the standard system transition.
+        safariViewController.transitioningDelegate = self
+        windowManager.mainWindow.rootViewController?.present(safariViewController, animated: true)
+    }
+    
     func openAppSettings() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else {
             return
@@ -77,4 +88,11 @@ class AppMediator: AppMediatorProtocol {
         
         return isAuthorized
     }
+}
+
+// MARK: UIViewControllerTransitioningDelegate
+
+extension AppMediator: UIViewControllerTransitioningDelegate {
+    // No methods implemented: merely being set as the transitioning delegate is enough to make
+    // SFSafariViewController use the standard system transition instead of its own custom one.
 }

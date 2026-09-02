@@ -6,7 +6,7 @@
 //
 
 import Clocks
-@testable import ElementX
+@testable import ForestNetwork
 import PushKit
 import Testing
 

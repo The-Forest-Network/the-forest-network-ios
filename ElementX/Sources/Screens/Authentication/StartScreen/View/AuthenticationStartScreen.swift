@@ -120,6 +120,12 @@ struct AuthenticationStartScreen: View {
                 .buttonStyle(.compound(.tertiary))
             }
             
+            Text(context.viewState.requestAccountMessage)
+                .font(.compound.bodySM)
+                .foregroundColor(.compound.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.top, 8)
+            
             versionText
                 .font(.compound.bodySM)
                 .foregroundColor(.compound.textSecondary)
@@ -135,6 +141,10 @@ struct AuthenticationStartScreen: View {
         }
         .padding(.horizontal, verticalSizeClass == .compact ? 128 : 24)
         .readableFrame()
+        .environment(\.openURL, OpenURLAction { url in
+            context.send(viewAction: .openRequestAccountURL(url))
+            return .handled
+        })
     }
     
     var versionText: Text {

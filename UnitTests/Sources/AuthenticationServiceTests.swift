@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Foundation
 import MatrixRustSDKMocks
 import Testing
@@ -75,7 +75,7 @@ struct AuthenticationServiceTests {
         }
         
         #expect(service.flow == .login)
-        #expect(service.homeserver.value == .init(address: "matrix.org", loginMode: .unknown))
+        #expect(service.homeserver.value == .init(address: "matrix.theforestnetwork.earth", loginMode: .unknown))
     }
     
     @Test

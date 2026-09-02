@@ -10,6 +10,12 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum UntranslatedL10n {
+  /// Find the trailhead
+  internal static var screenOnboardingRequestAccountContentLink: String { return UntranslatedL10n.tr("Untranslated", "screen_onboarding_request_account_content_link") }
+  /// Not in the Village yet? %1$@
+  internal static func screenOnboardingRequestAccountMessage(_ p1: Any) -> String {
+    return UntranslatedL10n.tr("Untranslated", "screen_onboarding_request_account_message", String(describing: p1))
+  }
   /// Clear all data currently stored on this device?
   /// Sign in again to access your account data and messages.
   internal static var softLogoutClearDataDialogContent: String { return UntranslatedL10n.tr("Untranslated", "soft_logout_clear_data_dialog_content") }

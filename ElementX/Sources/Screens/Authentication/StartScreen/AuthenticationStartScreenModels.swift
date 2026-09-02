@@ -27,6 +27,7 @@ struct AuthenticationStartScreenViewState: BindableState {
     let serverName: String?
     let showCreateAccountButton: Bool
     let showQRCodeLoginButton: Bool
+    let requestAccountMessage: AttributedString
     
     enum ClassicAppMode { case welcomeBack(ClassicAppAccount), otherOptions(ClassicAppAccount) }
     var classicAppMode: ClassicAppMode?
@@ -69,4 +70,5 @@ enum AuthenticationStartScreenViewAction {
     case otherOptions(ClassicAppAccount)
     case closeOtherOptions(ClassicAppAccount)
     case openClassicApp
+    case openRequestAccountURL(URL)
 }
