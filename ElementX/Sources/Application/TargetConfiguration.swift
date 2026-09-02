@@ -10,7 +10,7 @@ import Combine
 import Foundation
 import MatrixRustSDK
 
-enum Target: String {
+nonisolated enum Target: String {
     case mainApp = "elementx"
     case nse
     case shareExtension = "shareextension"

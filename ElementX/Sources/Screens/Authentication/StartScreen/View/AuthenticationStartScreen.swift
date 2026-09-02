@@ -80,6 +80,7 @@ struct AuthenticationStartScreen: View {
                         .font(.compound.headingLGBold)
                         .foregroundColor(.compound.textPrimary)
                         .multilineTextAlignment(.center)
+                        .accessibilityAddTraits(.isHeader)
                     Text(L10n.screenOnboardingWelcomeMessage)
                         .font(.compound.bodyLG)
                         .foregroundColor(.compound.textPrimary)

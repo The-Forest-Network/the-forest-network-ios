@@ -10,7 +10,7 @@ import Combine
 import Foundation
 import UIKit
 
-struct BugReport: Equatable {
+nonisolated struct BugReport: Equatable {
     let userID: String?
     let deviceID: String?
     let ed25519: String?
@@ -50,9 +50,8 @@ enum BugReportServiceError: LocalizedError {
 // sourcery: AutoMockable
 protocol BugReportServiceProtocol: AnyObject {
     var isEnabled: Bool { get }
-    var crashedLastRun: Bool { get }
     
-    var lastCrashEventID: String? { get set }
+    var lastCrashEventIDSubject: CurrentValueSubject<String?, Never> { get }
     
     func submitBugReport(_ bugReport: BugReport,
                          progressListener: CurrentValueSubject<Double, Never>) async -> Result<SubmitBugReportResponse, BugReportServiceError>

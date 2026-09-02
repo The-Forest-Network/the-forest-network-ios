@@ -62,7 +62,6 @@ private struct MediaPreviewViewController: UIViewControllerRepresentable {
         private var hasBeenPresented = false
         
         private var dismissalObserver: AnyCancellable?
-        private var cancellables: Set<AnyCancellable> = []
         
         init(viewModel: TimelineMediaPreviewViewModel,
              dismissalPublisher: PassthroughSubject<Void, Never>,
@@ -163,7 +162,7 @@ struct TimelineMediaPreviewModifier_Previews: PreviewProvider {
                                                        thumbnailSource: nil,
                                                        contentType: .pdf))
         
-        let timelineController = MockTimelineController(timelineKind: .media(.mediaFilesScreen), timelineItems: [item])
+        let timelineController = TimelineControllerMock(.init(timelineKind: .media(.mediaFilesScreen), timelineItems: [item]))
         
         let mediaProvider = MediaProviderMock(.init())
         

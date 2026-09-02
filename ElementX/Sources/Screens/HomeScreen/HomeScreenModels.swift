@@ -90,14 +90,10 @@ enum HomeScreenSecurityBannerMode: Equatable {
 }
 
 struct HomeScreenViewState: BindableState {
-    let userID: String
-    var userDisplayName: String?
-    var userAvatarURL: URL?
+    var userProfile: UserProfile
     
     var securityBannerMode = HomeScreenSecurityBannerMode.none
     var shouldShowNewSoundBanner = false
-    
-    var requiresExtraAccountSetup = false
     
     var rooms: [HomeScreenRoom] = []
     var roomListMode: HomeScreenRoomListMode = .skeletons
@@ -114,6 +110,9 @@ struct HomeScreenViewState: BindableState {
     
     var shouldShowSpaceFilters = false
     var selectedSpaceFilter: SpaceServiceFilter?
+    
+    /// Inline room list search is disabled when the dedicated global search tab is shown instead (see `UserSessionFlowCoordinator`).
+    var isRoomListSearchEnabled = true
     
     var visibleRooms: [HomeScreenRoom] {
         if roomListMode == .skeletons {
@@ -218,6 +217,8 @@ struct HomeScreenRoom: Identifiable, Equatable {
     
     let avatar: RoomAvatar
     
+    let statusEmoji: Character?
+    
     let canonicalAlias: String?
     
     let isTombstoned: Bool
@@ -245,6 +246,7 @@ struct HomeScreenRoom: Identifiable, Equatable {
                        lastMessage: placeholderLastMessage,
                        lastMessageState: nil,
                        avatar: .room(id: "", name: "", avatarURL: nil),
+                       statusEmoji: nil,
                        canonicalAlias: nil,
                        isTombstoned: false)
     }
@@ -297,6 +299,7 @@ extension HomeScreenRoom {
                   lastMessage: summary.lastMessage,
                   lastMessageState: summary.homeScreenLastMessageState,
                   avatar: summary.avatar,
+                  statusEmoji: summary.statusEmoji,
                   canonicalAlias: summary.canonicalAlias,
                   isTombstoned: summary.isTombstoned)
     }

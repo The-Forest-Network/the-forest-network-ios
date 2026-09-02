@@ -15,7 +15,7 @@ struct ListRowLabelStyle: LabelStyle {
     let iconAlignment: VerticalAlignment
     
     func makeBody(configuration: Configuration) -> some View {
-        HStack(alignment: iconAlignment, spacing: 16) {
+        HStack(alignment: iconAlignment, spacing: ListRowPadding.labelIconSpacing) {
             configuration.icon
             configuration.title
         }
@@ -39,7 +39,7 @@ struct ListRowAvatarLabelStyle: LabelStyle {
     @ScaledMetric private var avatarSize = 32.0
     
     func makeBody(configuration: Configuration) -> some View {
-        HStack(alignment: .center, spacing: 16) {
+        HStack(alignment: .center, spacing: ListRowPadding.labelIconSpacing) {
             configuration.icon
                 .frame(width: avatarSize, height: avatarSize)
                 .padding(.vertical, -5) // Don't allow the avatar to size the row.
@@ -51,7 +51,7 @@ struct ListRowAvatarLabelStyle: LabelStyle {
 public struct ListRowLabel<Icon: View>: View {
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.lineLimit) private var lineLimit
-    @ScaledMetric private var iconSize = 30.0
+    @ScaledMetric private var iconSize = Compound.supportsGlass ? CompoundIcon.Size.medium.value : 30 // Pre-iOS 26 includes space for a background.
     
     var title: String?
     var status: String?
@@ -145,10 +145,10 @@ public struct ListRowLabel<Icon: View>: View {
         } icon: {
             icon
                 .foregroundColor(iconForegroundColor)
-                .frame(width: iconSize, height: iconSize)
+                .frame(width: iconSize, height: iconSize) // Can be removed when dropping support for iOS 18.
                 .background(iconBackgroundColor)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .padding(.vertical, -4) // Don't allow the background to size the row.
+                .clipShape(RoundedRectangle(cornerRadius: Compound.supportsGlass ? 0 : 8))
+                .padding(.vertical, Compound.supportsGlass ? -1 : -4) // Don't allow the background to size the row.
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .labelStyle(ListRowLabelStyle(iconAlignment: iconAlignment))

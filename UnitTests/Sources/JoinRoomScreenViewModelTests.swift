@@ -32,7 +32,7 @@ final class JoinRoomScreenViewModelTests {
         appSettings = AppSettings.volatile()
     }
     
-    deinit {
+    isolated deinit {
         viewModel = nil
         clientProxy = nil
     }
@@ -179,7 +179,7 @@ final class JoinRoomScreenViewModelTests {
             clientProxy.roomForIdentifierClosure = { _ in
                 let roomProxy = KnockedRoomProxyMock(.init())
                 // to test the cancel knock function
-                roomProxy.cancelKnockUnderlyingReturnValue = .success(())
+                roomProxy.cancelKnockReturnValue = .success(())
                 return .knocked(roomProxy)
             }
         case .joined:
@@ -207,7 +207,8 @@ final class JoinRoomScreenViewModelTests {
     }
 }
 
-extension JoinRoomScreenViewModelAction: @retroactive Equatable {
+@MainActor
+extension JoinRoomScreenViewModelAction: @MainActor @retroactive Equatable {
     /// A close enough approximation for tests.
     public static func == (lhs: JoinRoomScreenViewModelAction, rhs: JoinRoomScreenViewModelAction) -> Bool {
         switch (lhs, rhs) {
