@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import MatrixRustSDKMocks
 import Testing
 import UIKit
@@ -59,6 +59,7 @@ final class AuthenticationStartScreenViewModelTests {
     @Test
     func provisionedOAuthState() async throws {
         // Given a view model that has been provisioned with a server that supports OAuth.
+        setAllowedAccountProviders(["company.com"], allowOtherAccountProviders: true)
         await setupViewModel(provisioningParameters: .init(accountProvider: "company.com", loginHint: "user@company.com"))
         #expect(authenticationService.homeserver.value.loginMode == .unknown)
         #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
@@ -79,6 +80,7 @@ final class AuthenticationStartScreenViewModelTests {
     @Test
     func provisionedPasswordState() async throws {
         // Given a view model that has been provisioned with a server that does not support OAuth.
+        setAllowedAccountProviders(["company.com"], allowOtherAccountProviders: true)
         await setupViewModel(provisioningParameters: .init(accountProvider: "company.com", loginHint: "user@company.com"), supportsOAuth: false)
         #expect(authenticationService.homeserver.value.loginMode == .unknown)
         #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
@@ -140,6 +142,7 @@ final class AuthenticationStartScreenViewModelTests {
     func classicAppAccount() async throws {
         // Given a view model with a Classic app account whose server name resolves successfully.
         let classicAppAccount = makeClassicAppAccount()
+        setAllowedAccountProviders(["company.com"])
         await setupViewModel(classicAppAccount: classicAppAccount)
         guard case .welcomeBack(let account) = context.viewState.classicAppMode else {
             Issue.record("Expected classicAppMode to be .welcomeBack")
@@ -164,6 +167,7 @@ final class AuthenticationStartScreenViewModelTests {
         // Given a view model where the Classic app account's server name has no well-known file.
         let classicAppAccount = makeClassicAppAccount(serverName: "unknown-server.org",
                                                       homeserverURL: "https://matrix.company.com")
+        setAllowedAccountProviders(["unknown-server.org"])
         await setupViewModel(classicAppAccount: classicAppAccount)
         guard case .welcomeBack(let account) = context.viewState.classicAppMode else {
             Issue.record("Expected classicAppMode to be .welcomeBack")
@@ -187,6 +191,7 @@ final class AuthenticationStartScreenViewModelTests {
     func classicAppAccountOnUnsupportedServer() async {
         // Given a view model with a Classic app account whose server supports neither OAuth nor password login.
         let classicAppAccount = makeClassicAppAccount()
+        setAllowedAccountProviders(["company.com"])
         await setupViewModel(classicAppAccount: classicAppAccount, supportsOAuth: false, supportsPasswordLogin: false)
         guard case .welcomeBack(let account) = context.viewState.classicAppMode else {
             Issue.record("Expected classicAppMode to be .welcomeBack")
@@ -241,6 +246,7 @@ final class AuthenticationStartScreenViewModelTests {
     func classicAppAccountRequiresBackup() async throws {
         // Given a view model with a Classic app account that requires backup before signing in.
         let classicAppAccount = makeClassicAppAccount()
+        setAllowedAccountProviders(["company.com"])
         await setupViewModel(classicAppAccount: classicAppAccount, availableSecrets: .requiresBackup)
         guard case .welcomeBack(let account) = context.viewState.classicAppMode else {
             Issue.record("Expected classicAppMode to be .welcomeBack")
@@ -330,9 +336,9 @@ final class AuthenticationStartScreenViewModelTests {
                           accessToken: "accessToken")
     }
     
-    private func setAllowedAccountProviders(_ providers: [String]) {
+    private func setAllowedAccountProviders(_ providers: [String], allowOtherAccountProviders: Bool = false) {
         appSettings.override(accountProviders: providers,
-                             allowOtherAccountProviders: false,
+                             allowOtherAccountProviders: allowOtherAccountProviders,
                              hideBrandChrome: false,
                              pushGatewayBaseURL: appSettings.pushGatewayBaseURL,
                              oAuthRedirectURL: appSettings.oAuthRedirectURL,
