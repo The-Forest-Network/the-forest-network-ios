@@ -1077,43 +1077,33 @@ nonisolated class AppMediatorMock: AppMediatorProtocol, @unchecked Sendable {
     }
     //MARK: - presentSafariViewController
 
-    var presentSafariViewControllerWithUnderlyingCallsCount = 0
+    private let presentSafariViewControllerWithCallsCountLock = NSLock()
+    private nonisolated(unsafe) var presentSafariViewControllerWithUnderlyingCallsCount = 0
     var presentSafariViewControllerWithCallsCount: Int {
-        get {
-            if Thread.isMainThread {
-                return presentSafariViewControllerWithUnderlyingCallsCount
-            } else {
-                var returnValue: Int? = nil
-                DispatchQueue.main.sync {
-                    returnValue = presentSafariViewControllerWithUnderlyingCallsCount
-                }
-
-                return returnValue!
-            }
-        }
-        set {
-            if Thread.isMainThread {
-                presentSafariViewControllerWithUnderlyingCallsCount = newValue
-            } else {
-                DispatchQueue.main.sync {
-                    presentSafariViewControllerWithUnderlyingCallsCount = newValue
-                }
-            }
-        }
+        get { presentSafariViewControllerWithCallsCountLock.withLock { presentSafariViewControllerWithUnderlyingCallsCount } }
+        set { presentSafariViewControllerWithCallsCountLock.withLock { presentSafariViewControllerWithUnderlyingCallsCount = newValue } }
     }
     var presentSafariViewControllerWithCalled: Bool {
         return presentSafariViewControllerWithCallsCount > 0
     }
-    var presentSafariViewControllerWithReceivedUrl: URL?
-    var presentSafariViewControllerWithReceivedInvocations: [URL] = []
-    var presentSafariViewControllerWithClosure: ((URL) -> Void)?
+    private let presentSafariViewControllerWithReceivedUrlLock = NSLock()
+    private nonisolated(unsafe) var presentSafariViewControllerWithUnderlyingReceivedUrl: URL?
+    var presentSafariViewControllerWithReceivedUrl: URL? {
+        get { presentSafariViewControllerWithReceivedUrlLock.withLock { presentSafariViewControllerWithUnderlyingReceivedUrl } }
+        set { presentSafariViewControllerWithReceivedUrlLock.withLock { presentSafariViewControllerWithUnderlyingReceivedUrl = newValue } }
+    }
+    private let presentSafariViewControllerWithReceivedInvocationsLock = NSLock()
+    private nonisolated(unsafe) var presentSafariViewControllerWithUnderlyingReceivedInvocations: [URL] = []
+    var presentSafariViewControllerWithReceivedInvocations: [URL] {
+        get { presentSafariViewControllerWithReceivedInvocationsLock.withLock { presentSafariViewControllerWithUnderlyingReceivedInvocations } }
+        set { presentSafariViewControllerWithReceivedInvocationsLock.withLock { presentSafariViewControllerWithUnderlyingReceivedInvocations = newValue } }
+    }
+    nonisolated(unsafe) var presentSafariViewControllerWithClosure: ((URL) -> Void)?
 
     func presentSafariViewController(with url: URL) {
-        presentSafariViewControllerWithCallsCount += 1
+        presentSafariViewControllerWithCallsCountLock.withLock { presentSafariViewControllerWithUnderlyingCallsCount += 1 }
         presentSafariViewControllerWithReceivedUrl = url
-        DispatchQueue.main.async {
-            self.presentSafariViewControllerWithReceivedInvocations.append(url)
-        }
+        presentSafariViewControllerWithReceivedInvocationsLock.withLock { presentSafariViewControllerWithUnderlyingReceivedInvocations.append(url) }
         presentSafariViewControllerWithClosure?(url)
     }
     //MARK: - openAppSettings
