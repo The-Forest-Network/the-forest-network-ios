@@ -131,6 +131,9 @@ struct RunTests: AsyncParsableCommand {
         command += " -destination 'platform=iOS Simulator,name=\(device),OS=\(osVersion),arch=arm64'"
         command += " -resultBundlePath \(resultBundlePath)"
         command += " -skipPackagePluginValidation"
+        // Pinned to a fixed, repo-relative path (rather than DerivedData's randomly-hashed
+        // default) so CI can cache resolved/built Swift packages across runs.
+        command += " -clonedSourcePackagesDirPath .build/SourcePackages"
         
         // Use xcodebuild's native retry support to re-run only failing tests
         // instead of re-running the entire suite. retries=0 means no retries (single run).
