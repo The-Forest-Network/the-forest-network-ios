@@ -135,6 +135,12 @@ struct RunTests: AsyncParsableCommand {
         // default) so CI can cache resolved/built Swift packages across runs.
         command += " -clonedSourcePackagesDirPath .build/SourcePackages"
         
+        // Use a dedicated compilation cache for incremental builds on CI (as Xcode's DerivedData
+        // is invalidated by a fresh checkout).
+        command += " COMPILATION_CACHE_ENABLE_CACHING=YES"
+        // Store it outside DerivedData so CI can cache just what it needs.
+        command += " COMPILATION_CACHE_CAS_PATH=$HOME/Library/Developer/Xcode/CompilationCache.noindex"
+        
         // Use xcodebuild's native retry support to re-run only failing tests
         // instead of re-running the entire suite. retries=0 means no retries (single run).
         if retries > 0 {
