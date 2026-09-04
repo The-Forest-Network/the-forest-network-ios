@@ -118,6 +118,41 @@ final class AuthenticationStartScreenViewModelTests {
     }
     
     @Test
+    func singleProviderRegisterState() async throws {
+        // Given a view model for an app that only allows the use of a single provider that supports OAuth.
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel()
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
+        
+        // When tapping the create account button the locked provider should be used directly, skipping
+        // the server selection screen entirely (there's nothing to choose from a single locked provider).
+        let deferred = deferFulfillment(viewModel.actions) { $0.isRegisterDirectlyWithOAuth }
+        context.send(viewAction: .register)
+        try await deferred.fulfill()
+        
+        #expect(clientFactory.makeClientHomeserverAddressSessionDirectoriesPassphraseClientSessionDelegateAppSettingsAppHooksCallsCount == 1)
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 1)
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesReceivedArguments?.loginHint == nil)
+        #expect(authenticationService.flow == .register)
+    }
+    
+    @Test
+    func singleProviderRegisterUnsupportedState() async throws {
+        // Given a view model for an app that only allows the use of a single provider that doesn't support OAuth,
+        // meaning registration isn't possible (there's no password/UIA registration implementation).
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel(supportsOAuth: false)
+        
+        // When tapping the create account button configuring the service for registration should fail
+        // and an error should be shown, without ever requesting an OAuth URL.
+        let deferred = deferFulfillment(context.observe(\.viewState.bindings.alertInfo)) { $0 != nil }
+        context.send(viewAction: .register)
+        try await deferred.fulfill()
+        
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
+    }
+    
+    @Test
     func singleProviderPasswordState() async throws {
         // Given a view model that for an app that only allows the use of a single provider that does not support OAuth.
         setAllowedAccountProviders(["company.com"])
@@ -372,6 +407,13 @@ extension AuthenticationStartScreenViewModelAction {
     var isLoginDirectlyWithPassword: Bool {
         switch self {
         case .loginDirectlyWithPassword: true
+        default: false
+        }
+    }
+    
+    var isRegisterDirectlyWithOAuth: Bool {
+        switch self {
+        case .registerDirectlyWithOAuth: true
         default: false
         }
     }

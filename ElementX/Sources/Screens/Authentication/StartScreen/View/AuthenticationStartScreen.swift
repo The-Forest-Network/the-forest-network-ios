@@ -116,7 +116,7 @@ struct AuthenticationStartScreen: View {
             
             if context.viewState.showCreateAccountButton {
                 Button { context.send(viewAction: .register) } label: {
-                    Text(L10n.screenCreateAccountTitle)
+                    Text(UntranslatedL10n.screenOnboardingRegistrationButtonTitle)
                 }
                 .buttonStyle(.compound(.tertiary))
             }

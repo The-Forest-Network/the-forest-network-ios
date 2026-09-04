@@ -12,6 +12,8 @@ import Foundation
 internal nonisolated enum UntranslatedL10n {
   /// Search
   internal static var screenHomeTabSearch: String { return UntranslatedL10n.tr("Untranslated", "screen_home_tab_search") }
+  /// I've been invited to the Village
+  internal static var screenOnboardingRegistrationButtonTitle: String { return UntranslatedL10n.tr("Untranslated", "screen_onboarding_registration_button_title") }
   /// Find the trailhead
   internal static var screenOnboardingRequestAccountContentLink: String { return UntranslatedL10n.tr("Untranslated", "screen_onboarding_request_account_content_link") }
   /// Not in the Village yet? %1$@

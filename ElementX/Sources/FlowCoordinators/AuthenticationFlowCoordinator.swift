@@ -285,6 +285,8 @@ class AuthenticationFlowCoordinator: FlowCoordinatorProtocol {
                     showOAuthAuthentication(oAuthData: oAuthData, presentationAnchor: window)
                 case .loginDirectlyWithPassword(let loginHint):
                     stateMachine.tryEvent(.continueWithPassword, userInfo: loginHint)
+                case .registerDirectlyWithOAuth(let oAuthData, let window):
+                    showOAuthAuthentication(oAuthData: oAuthData, presentationAnchor: window)
                     
                 case .reportProblem:
                     stateMachine.tryEvent(.reportProblem)
