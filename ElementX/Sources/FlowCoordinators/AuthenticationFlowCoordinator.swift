@@ -385,7 +385,7 @@ class AuthenticationFlowCoordinator: FlowCoordinatorProtocol {
         oAuthPresenter = presenter
         
         Task {
-            switch await presenter.authenticate(using: oAuthData) {
+            switch await presenter.authenticate(using: oAuthData, useEphemeralSession: authenticationService.flow == .register) {
             case .success(let userSession):
                 stateMachine.tryEvent(.signedIn, userInfo: userSession)
             case .failure:

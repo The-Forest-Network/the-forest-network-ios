@@ -119,9 +119,10 @@ final class AuthenticationStartScreenViewModelTests {
     
     @Test
     func singleProviderRegisterState() async throws {
-        // Given a view model for an app that only allows the use of a single provider that supports OAuth.
+        // Given a view model for an app that only allows the use of a single provider that supports OAuth
+        // and its `create` prompt.
         setAllowedAccountProviders(["company.com"])
-        await setupViewModel()
+        await setupViewModel(supportsOAuthCreatePrompt: true)
         #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
         
         // When tapping the create account button the locked provider should be used directly, skipping
@@ -130,10 +131,28 @@ final class AuthenticationStartScreenViewModelTests {
         context.send(viewAction: .register)
         try await deferred.fulfill()
         
+        // Then the `create` prompt should be used, since registration is what was asked for and the server supports it.
         #expect(clientFactory.makeClientHomeserverAddressSessionDirectoriesPassphraseClientSessionDelegateAppSettingsAppHooksCallsCount == 1)
         #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 1)
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesReceivedArguments?.prompt == .create)
         #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesReceivedArguments?.loginHint == nil)
         #expect(authenticationService.flow == .register)
+    }
+    
+    @Test
+    func singleProviderRegisterWithoutCreatePromptState() async throws {
+        // Given a view model for an app that only allows the use of a single provider that supports OAuth
+        // but not its `create` prompt.
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel(supportsOAuthCreatePrompt: false)
+        
+        // When tapping the create account button.
+        let deferred = deferFulfillment(viewModel.actions) { $0.isRegisterDirectlyWithOAuth }
+        context.send(viewAction: .register)
+        try await deferred.fulfill()
+        
+        // Then the `consent` prompt should be used instead, falling back to the same prompt used for login.
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesReceivedArguments?.prompt == .consent)
     }
     
     @Test
@@ -317,11 +336,12 @@ final class AuthenticationStartScreenViewModelTests {
     private func setupViewModel(classicAppAccount: ClassicAppAccount? = nil,
                                 provisioningParameters: AccountProvisioningParameters? = nil,
                                 supportsOAuth: Bool = true,
+                                supportsOAuthCreatePrompt: Bool = false,
                                 supportsPasswordLogin: Bool = true,
                                 availableSecrets: ClassicAppAccount.AvailableSecrets = .complete) async {
         // Manually create a configuration as the default homeserver address setting is immutable.
         client = ClientSDKMock(.init(oAuthLoginURL: supportsOAuth ? "https://account.company.com/authorize" : nil,
-                                     supportsOAuthCreatePrompt: false,
+                                     supportsOAuthCreatePrompt: supportsOAuthCreatePrompt,
                                      supportsPasswordLogin: supportsPasswordLogin))
         // Map both the server name and the homeserver URL so fallback lookups work.
         let homeserverClients: [String: ClientSDKMock] = ["company.com": client,

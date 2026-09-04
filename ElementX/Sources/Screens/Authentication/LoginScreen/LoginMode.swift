@@ -25,4 +25,12 @@ nonisolated enum LoginMode: Equatable {
         default: false
         }
     }
+    
+    var supportsCreatePrompt: Bool {
+        if case .oAuth(let supportsCreatePrompt) = self {
+            supportsCreatePrompt
+        } else {
+            false
+        }
+    }
 }
