@@ -18,7 +18,7 @@ enum RoomDetailsScreenViewModelAction: Equatable {
     case requestMemberDetailsPresentation
     case requestRecipientDetailsPresentation(userID: String)
     case requestInvitePeoplePresentation
-    case requestInviteToNewRoomPresentation(selectedInvitee: UserProfileProxy)
+    case requestInviteToNewRoomPresentation(selectedInvitee: UserProfile)
     case leftRoom
     case requestEditDetailsPresentation
     case requestPollsHistoryPresentation
@@ -62,6 +62,7 @@ struct RoomDetailsScreenViewState: BindableState {
     var canKickUsers = false
     var canBanUsers = false
     var notificationSettingsState: RoomDetailsNotificationSettingsState = .loading
+    var isCallingEnabled = true
     var canJoinCall = false
     var pinnedEventsActionState = RoomDetailsScreenPinnedEventsActionState.loading
     
@@ -93,7 +94,7 @@ struct RoomDetailsScreenViewState: BindableState {
     
     var shortcuts: [RoomDetailsScreenViewShortcut] {
         var shortcuts: [RoomDetailsScreenViewShortcut] = [.mute]
-        if !ProcessInfo.processInfo.isiOSAppOnMac, canJoinCall {
+        if !ProcessInfo.processInfo.isiOSAppOnMac, isCallingEnabled, canJoinCall {
             if isDirect {
                 shortcuts.append(.voiceCall)
             }

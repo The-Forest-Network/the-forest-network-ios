@@ -1,13 +1,13 @@
 {
-  "originHash" : "94f94b33c718da861bcc32c9deb98db8fb968442e64aa9815ca00282b68d7e10",
+  "originHash" : "89c566dd1386002d6eb972c1cd428caf08db40d80235fb7bc4c296139b11e7c7",
   "pins" : [
     {
       "identity" : "compound-design-tokens",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/element-hq/compound-design-tokens",
       "state" : {
-        "revision" : "33a0ad8a14dd07dd1acfcb5a1e77cb8485c594ea",
-        "version" : "10.2.0"
+        "revision" : "edc554adf951b0627ab68b197f7d86c786189e76",
+        "version" : "10.2.4"
       }
     },
     {
@@ -293,8 +293,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
       "state" : {
-        "revision" : "ad5e3190cc63dc288f28546f9c6827efc1e9d495",
-        "version" : "1.19.2"
+        "revision" : "59a99c458de4d2dee580529b61b4f78dca7b7fa6",
+        "version" : "1.19.4"
       }
     },
     {
@@ -302,8 +302,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-syntax",
       "state" : {
-        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
-        "version" : "602.0.0"
+        "revision" : "79e4b74a295b6eb74a8b585e3a39d29e70c1dbd1",
+        "version" : "603.0.2"
       }
     },
     {

@@ -17,9 +17,8 @@ class InviteUsersScreenViewModel: InviteUsersScreenViewModelType, InviteUsersScr
     private let roomType: InviteUsersScreenRoomType
     private let userDiscoveryService: UserDiscoveryServiceProtocol
     private let userIndicatorController: UserIndicatorControllerProtocol
-    private let appSettings: AppSettings
     
-    private var suggestedUsers = [UserProfileProxy]()
+    private var suggestedUsers = [UserProfile]()
     
     private let actionsSubject: PassthroughSubject<InviteUsersScreenViewModelAction, Never> = .init()
     var actions: AnyPublisher<InviteUsersScreenViewModelAction, Never> {
@@ -30,15 +29,13 @@ class InviteUsersScreenViewModel: InviteUsersScreenViewModelType, InviteUsersScr
          roomType: InviteUsersScreenRoomType,
          isSkippable: Bool,
          userDiscoveryService: UserDiscoveryServiceProtocol,
-         userIndicatorController: UserIndicatorControllerProtocol,
-         appSettings: AppSettings) {
+         userIndicatorController: UserIndicatorControllerProtocol) {
         clientProxy = userSession.clientProxy
         self.roomType = roomType
         self.userDiscoveryService = userDiscoveryService
         self.userIndicatorController = userIndicatorController
-        self.appSettings = appSettings
         
-        let mandatoryInvitees: [UserProfileProxy] = if case .draft(let invitees) = roomType {
+        let mandatoryInvitees: [UserProfile] = if case .draft(let invitees) = roomType {
             invitees
         } else {
             []
@@ -70,12 +67,12 @@ class InviteUsersScreenViewModel: InviteUsersScreenViewModelType, InviteUsersScr
         case .proceed:
             switch roomType {
             case .draft:
-                createDraftRoom(mandatoryUserIDs: state.selectedUsers.map(\.userID))
+                createDraftRoom(mandatoryUserIDs: state.selectedUsers.map(\.id))
             case .existingRoom(let roomProxy):
                 guard roomProxy.details.historySharingState != RoomHistorySharingState.hidden,
                       !state.usersToConfirm.isEmpty,
                       !state.isSkippable else {
-                    inviteUsers(state.selectedUsers.map(\.userID), roomProxy: roomProxy)
+                    inviteUsers(state.selectedUsers.map(\.id), roomProxy: roomProxy)
                     return
                 }
                 state.bindings.presentConfirmationDialog = true
@@ -83,14 +80,14 @@ class InviteUsersScreenViewModel: InviteUsersScreenViewModelType, InviteUsersScr
         case .removeUnknownUsers:
             state.bindings.presentConfirmationDialog = false
             state.selectedUsers.removeAll { user in
-                state.usersToConfirm.contains { $0.userID == user.userID }
+                state.usersToConfirm.contains { $0.id == user.id }
             }
             state.usersToConfirm = []
         case .confirmUnknownUsers:
             state.bindings.presentConfirmationDialog = false
             state.usersToConfirm = []
             if case .existingRoom(let roomProxy) = roomType {
-                inviteUsers(state.selectedUsers.map(\.userID), roomProxy: roomProxy)
+                inviteUsers(state.selectedUsers.map(\.id), roomProxy: roomProxy)
             }
         case .toggleUser(let user):
             toggleUser(user)
@@ -99,16 +96,16 @@ class InviteUsersScreenViewModel: InviteUsersScreenViewModelType, InviteUsersScr
     
     // MARK: - Private
     
-    private func toggleUser(_ user: UserProfileProxy) {
+    private func toggleUser(_ user: UserProfile) {
         guard !state.isInviteeMandatory(user) else { return }
         
         if state.selectedUsers.contains(user) {
-            state.selectedUsers.removeAll { $0.userID == user.userID }
+            state.selectedUsers.removeAll { $0.id == user.id }
         } else {
             state.selectedUsers.append(user)
-            withElementAnimation(.easeInOut) { state.bindings.selectedUsersPosition = user.userID }
+            withElementAnimation(.easeInOut) { state.bindings.selectedUsersPosition = user.id }
             Task {
-                let identityUnknown = if case .success(let identity) = await self.clientProxy.userIdentity(for: user.userID, fallBackToServer: false) {
+                let identityUnknown = if case .success(let identity) = await self.clientProxy.userIdentity(for: user.id, fallBackToServer: false) {
                     identity == nil
                 } else {
                     true
@@ -160,9 +157,11 @@ class InviteUsersScreenViewModel: InviteUsersScreenViewModelType, InviteUsersScr
                     }
                 }
                 
-                return await group.first { inviteResult in
-                    inviteResult.isFailure
-                } ?? .success(())
+                for await inviteResult in group where inviteResult.isFailure {
+                    return inviteResult
+                }
+                
+                return .success(())
             }
             
             guard case .failure = result else {
@@ -192,7 +191,6 @@ class InviteUsersScreenViewModel: InviteUsersScreenViewModelType, InviteUsersScr
         }
     }
     
-    // periphery:ignore - automatically cancelled when set to nil
     @CancellableTask
     private var fetchUsersTask: Task<Void, Never>?
     

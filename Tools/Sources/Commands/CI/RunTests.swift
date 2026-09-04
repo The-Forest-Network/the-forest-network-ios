@@ -9,7 +9,7 @@ struct RunTests: AsyncParsableCommand {
                                                     
                                                     Examples:
                                                       swift run tools run-tests --scheme UnitTests
-                                                      swift run tools run-tests --scheme UITests --device iPhone --os-version 26.4
+                                                      swift run tools run-tests --scheme UITests --device iPhone --os-version 26.5
                                                       swift run tools run-tests --scheme PreviewTests --create-simulator-name "iPhone SE (3rd generation)" \
                                                         --create-simulator-type com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation
                                                     """)
@@ -20,8 +20,8 @@ struct RunTests: AsyncParsableCommand {
     @Option(help: "The simulator device name to run tests on (e.g. 'iPhone 17').")
     var device = "iPhone 17"
     
-    @Option(help: "The iOS version to use for the simulator runtime (e.g. '26.4').")
-    var osVersion = "26.4.1"
+    @Option(help: "The iOS version to use for the simulator runtime (e.g. '26.5').")
+    var osVersion = CI.defaultOSVersion
     
     var runtime: String {
         osVersion.split(separator: ".").prefix(2).joined(separator: ".")
@@ -38,6 +38,9 @@ struct RunTests: AsyncParsableCommand {
     
     @Option(help: "Only run a specific test (format: 'ClassName/testName').")
     var testName: String?
+    
+    @Flag(help: "Run the tests on a saturated CPU to reproduce the flakiness of a busy CI runner.")
+    var constrained = false
     
     private var isCI: Bool {
         ProcessInfo.processInfo.environment["CI"] != nil
@@ -72,6 +75,12 @@ struct RunTests: AsyncParsableCommand {
         // Ensure the output directory exists
         let outputDirectory = resultBundleURL.deletingLastPathComponent()
         try FileManager.default.createDirectory(at: outputDirectory, withIntermediateDirectories: true)
+        
+        let cpuConstraint = CPUConstraint()
+        if constrained {
+            cpuConstraint.start()
+        }
+        defer { cpuConstraint.stop() }
         
         try await executeXcodeBuild()
         
@@ -127,7 +136,6 @@ struct RunTests: AsyncParsableCommand {
     private func executeXcodeBuild() async throws {
         var command = "set -o pipefail && xcodebuild test"
         command += " -scheme \(scheme)"
-        command += " -sdk iphonesimulator"
         command += " -destination 'platform=iOS Simulator,name=\(device),OS=\(osVersion),arch=arm64'"
         command += " -resultBundlePath \(resultBundlePath)"
         command += " -skipPackagePluginValidation"
@@ -135,12 +143,20 @@ struct RunTests: AsyncParsableCommand {
         // default) so CI can cache resolved/built Swift packages across runs.
         command += " -clonedSourcePackagesDirPath .build/SourcePackages"
         
+        // Use a dedicated compilation cache for incremental builds on CI (as Xcode's DerivedData
+        // is invalidated by a fresh checkout).
+        command += " COMPILATION_CACHE_ENABLE_CACHING=YES"
+        // Store it outside DerivedData so CI can cache just what it needs.
+        command += " COMPILATION_CACHE_CAS_PATH=$HOME/Library/Developer/Xcode/CompilationCache.noindex"
+        
         // Use xcodebuild's native retry support to re-run only failing tests
         // instead of re-running the entire suite. retries=0 means no retries (single run).
         if retries > 0 {
             // -test-iterations is the total number of attempts (initial + retries)
             command += " -retry-tests-on-failure"
             command += " -test-iterations \(retries + 1)"
+            // Ensure retries still happen when a runner exits early.
+            command += " -test-repetition-relaunch-enabled YES"
         }
         
         if let testName {

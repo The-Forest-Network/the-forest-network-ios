@@ -9,6 +9,7 @@
 @testable import ForestNetwork
 import Testing
 
+@MainActor
 final class RoomListFiltersStateTests {
     var appSettings: AppSettings
     var state: RoomListFiltersState

@@ -22,7 +22,7 @@ struct TimelineMediaPreviewViewModelTests {
     
     var mediaProvider: MediaProviderMock!
     var photoLibraryManager: PhotoLibraryManagerMock!
-    var timelineController: MockTimelineController!
+    var timelineController: TimelineControllerMock!
     
     @Test
     mutating func loadingItem() async throws {
@@ -94,11 +94,10 @@ struct TimelineMediaPreviewViewModelTests {
     mutating func loadingMoreItems() async throws {
         // Given a view model with a loaded item.
         try await loadingItem()
-        #expect(timelineController.paginateBackwardsCallCount == 0)
+        #expect(timelineController.paginateBackwardsRequestSizeCallsCount == 0)
         
         // When swiping to a "loading more" item and there are more media items to load.
-        timelineController.paginationState = .init(backward: .idle, forward: .endReached)
-        timelineController.backPaginationResponses.append(RoomTimelineItemFixtures.mediaChunk)
+        timelineController.update(paginationState: .init(backward: .idle, forward: .endReached))
         let failure = deferFailure(viewModel.state.previewControllerDriver, timeout: .seconds(1)) { $0.isItemLoaded }
         context.send(viewAction: .updateCurrentItem(.loading(.paginatingBackwards)))
         try await failure.fulfill()
@@ -106,7 +105,7 @@ struct TimelineMediaPreviewViewModelTests {
         // Then there should no longer be a media preview and instead of loading any media, a pagination request should be made.
         #expect(mediaProvider.loadFileFromSourceFilenameCallsCount == 1)
         #expect(context.viewState.currentItem == .loading(.paginatingBackwards)) // Note: This item only changes when the preview controller handles the new items.
-        #expect(timelineController.paginateBackwardsCallCount == 1)
+        #expect(timelineController.paginateBackwardsRequestSizeCallsCount == 1)
     }
     
     @Test
@@ -117,7 +116,7 @@ struct TimelineMediaPreviewViewModelTests {
         
         // When more items are added via a back pagination.
         let deferred = deferFulfillment(context.viewState.dataSource.previewItemsPaginationPublisher) { _ in true }
-        timelineController.backPaginationResponses.append(makeItems())
+        timelineController.setupBackPagination(responses: [makeItems()])
         _ = await timelineController.paginateBackwards(requestSize: 20)
         try await deferred.fulfill()
         
@@ -174,7 +173,7 @@ struct TimelineMediaPreviewViewModelTests {
         #expect(.media(mediaDetailsItem) == context.viewState.currentItem)
         
         // When choosing to redact the item.
-        context.send(viewAction: .menuAction(.redact, item: mediaItem))
+        context.send(viewAction: .menuAction(.redact(isMedia: true), item: mediaItem))
         
         // Then the confirmation sheet should be presented.
         #expect(context.redactConfirmationItem == mediaItem)
@@ -182,11 +181,15 @@ struct TimelineMediaPreviewViewModelTests {
         
         // When confirming the redaction.
         let deferred = deferFulfillment(viewModel.actions) { $0 == .dismiss }
-        context.send(viewAction: .redactConfirmation(item: mediaItem))
+        
+        // The redaction runs in an unstructured task, so wait for the call rather than asserting after the dismiss.
+        await waitForConfirmation { confirmation in
+            timelineController.redactClosure = { _ in confirmation() }
+            context.send(viewAction: .redactConfirmation(item: mediaItem))
+        }
         
         // Then the item should be redacted and the view should be dismissed.
         try await deferred.fulfill()
-        #expect(timelineController.redactCalled)
     }
     
     @Test
@@ -200,7 +203,7 @@ struct TimelineMediaPreviewViewModelTests {
         #expect(mediaItem.contentType == "JPEG image")
         
         // When choosing to save the image.
-        context.send(viewAction: .menuAction(.save, item: mediaItem))
+        context.send(viewAction: .menuAction(.downloadMedia, item: mediaItem))
         try await Task.sleep(for: .seconds(0.5))
         
         // Then the image should be saved as a photo to the user's photo library.
@@ -222,7 +225,7 @@ struct TimelineMediaPreviewViewModelTests {
         
         // When choosing to save the image.
         let deferred = deferFulfillment(context.viewState.previewControllerDriver) { $0.isAuthorizationRequired }
-        context.send(viewAction: .menuAction(.save, item: mediaItem))
+        context.send(viewAction: .menuAction(.downloadMedia, item: mediaItem))
         
         // Then the user should be prompted to allow access.
         try await deferred.fulfill()
@@ -241,7 +244,7 @@ struct TimelineMediaPreviewViewModelTests {
         #expect(mediaItem.contentType == "MPEG-4 movie")
         
         // When choosing to save the video.
-        context.send(viewAction: .menuAction(.save, item: mediaItem))
+        context.send(viewAction: .menuAction(.downloadMedia, item: mediaItem))
         try await Task.sleep(for: .seconds(0.5))
         
         // Then the video should be saved as a video in the user's photo library.
@@ -263,7 +266,7 @@ struct TimelineMediaPreviewViewModelTests {
         
         // When choosing to save the file.
         let deferred = deferFulfillment(context.viewState.previewControllerDriver) { $0.isExportFile }
-        context.send(viewAction: .menuAction(.save, item: mediaItem))
+        context.send(viewAction: .menuAction(.downloadMedia, item: mediaItem))
         let exportAction = try await deferred.fulfill()
         
         guard case let .exportFile(file) = exportAction else {
@@ -274,6 +277,64 @@ struct TimelineMediaPreviewViewModelTests {
         // Then the binding should be set for the user to export the file to their specified location.
         #expect(!photoLibraryManager.addResourceAtCalled)
         #expect(file.url == mediaItem.fileHandle?.url)
+    }
+    
+    @Test
+    mutating func safeItem() async throws {
+        // Given a view model with a content scanner that reports the media as safe.
+        setupViewModel(contentScannerService: ContentScannerServiceMock(.init(scanResult: true)))
+        
+        // When the preview controller sets the current item.
+        try await loadInitialItem()
+        
+        // Then the media should be downloaded as usual.
+        guard case .media = context.viewState.currentItem else {
+            Issue.record("The item should be previewable")
+            return
+        }
+        #expect(mediaProvider.loadFileFromSourceFilenameCalled)
+    }
+    
+    @Test
+    mutating func unsafeItem() async throws {
+        // Given a view model with a content scanner that reports the media as unsafe.
+        setupViewModel(contentScannerService: ContentScannerServiceMock(.init(scanResult: false)))
+        guard case let .media(mediaItem) = context.viewState.currentItem else {
+            Issue.record("There should be a current item")
+            return
+        }
+        
+        // When the preview controller sets the current item.
+        let failure = deferFailure(viewModel.state.previewControllerDriver, timeout: .seconds(1)) { $0.isItemLoaded }
+        context.send(viewAction: .updateCurrentItem(.media(mediaItem)))
+        try await failure.fulfill()
+        
+        // Then the media must not be downloaded and the failure should be reflected in the current item.
+        #expect(!mediaProvider.loadFileFromSourceFilenameCalled)
+        #expect(context.viewState.currentItem == .contentScan(.init(media: mediaItem, state: .failure(.notSafe))))
+        #expect(mediaItem.fileHandle == nil)
+    }
+    
+    @Test
+    mutating func failedScanItem() async throws {
+        // Given a view model with a content scanner that fails to scan the media.
+        let contentScannerService = ContentScannerServiceMock()
+        contentScannerService.loadScanResultFromSourceClosure = { _ in .failure(.failedScanning) }
+        setupViewModel(contentScannerService: contentScannerService)
+        guard case let .media(mediaItem) = context.viewState.currentItem else {
+            Issue.record("There should be a current item")
+            return
+        }
+        
+        // When the preview controller sets the current item.
+        let failure = deferFailure(viewModel.state.previewControllerDriver, timeout: .seconds(1)) { $0.isItemLoaded }
+        context.send(viewAction: .updateCurrentItem(.media(mediaItem)))
+        try await failure.fulfill()
+        
+        // Then the media must not be downloaded and the failure should be reflected in the current item.
+        #expect(!mediaProvider.loadFileFromSourceFilenameCalled)
+        #expect(context.viewState.currentItem == .contentScan(.init(media: mediaItem, state: .failure(.notFound))))
+        #expect(mediaItem.fileHandle == nil)
     }
     
     // MARK: - Helpers
@@ -290,16 +351,19 @@ struct TimelineMediaPreviewViewModelTests {
         try await deferred.fulfill()
     }
     
-    private mutating func setupViewModel(initialItemIndex: Int = 0, photoLibraryAuthorizationDenied: Bool = false) {
+    private mutating func setupViewModel(initialItemIndex: Int = 0,
+                                         photoLibraryAuthorizationDenied: Bool = false,
+                                         contentScannerService: ContentScannerServiceProtocol? = nil) {
         let initialItems = makeItems()
-        timelineController = MockTimelineController(timelineKind: .media(.mediaFilesScreen), timelineItems: initialItems)
+        timelineController = TimelineControllerMock(.init(timelineKind: .media(.mediaFilesScreen), timelineItems: initialItems))
         
         mediaProvider = MediaProviderMock(.init())
         photoLibraryManager = PhotoLibraryManagerMock(.init(authorizationDenied: photoLibraryAuthorizationDenied))
         
         viewModel = TimelineMediaPreviewViewModel(initialItem: initialItems[initialItemIndex],
                                                   timelineViewModel: TimelineViewModel.mock(timelineKind: .media(.mediaFilesScreen),
-                                                                                            timelineController: timelineController),
+                                                                                            timelineController: timelineController,
+                                                                                            contentScannerService: contentScannerService),
                                                   mediaProvider: mediaProvider,
                                                   photoLibraryManager: photoLibraryManager,
                                                   userIndicatorController: UserIndicatorControllerMock(),

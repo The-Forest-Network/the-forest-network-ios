@@ -37,7 +37,7 @@ class AppMediator: NSObject, AppMediatorProtocol {
         }
     }
     
-    func beginBackgroundTask(expirationHandler handler: (() -> Void)?) -> UIBackgroundTaskIdentifier {
+    func beginBackgroundTask(expirationHandler handler: (@MainActor @Sendable () -> Void)?) -> UIBackgroundTaskIdentifier {
         application.beginBackgroundTask(expirationHandler: handler)
     }
     

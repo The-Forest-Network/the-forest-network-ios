@@ -5,8 +5,6 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-// periphery:ignore:all
-
 import Combine
 import Foundation
 import MatrixRustSDK
@@ -14,7 +12,7 @@ import MatrixRustSDK
 /// A ``TimelineItemProviderMock`` subclass that optionally listens for ``UITestsSignalling`` signals
 /// to drive pagination and incoming message simulation.
 @MainActor
-class SignallingTimelineItemProviderMock: TimelineItemProviderMock {
+class SignallingTimelineItemProviderMock: TimelineItemProviderMock, @unchecked Sendable {
     private let stateSubject: CurrentValueSubject<([TimelineItemProxy], TimelinePaginationState), Never>
     
     /// An array of item arrays that will be prepended in order on each paginate signal.
@@ -25,6 +23,10 @@ class SignallingTimelineItemProviderMock: TimelineItemProviderMock {
     private var client: UITestsSignalling.Client?
     private var signalCancellable: AnyCancellable?
     
+    override nonisolated init() {
+        fatalError("Use init(itemProxies:paginationState:listenForSignals:) instead.")
+    }
+    
     init(itemProxies: [TimelineItemProxy] = [],
          paginationState: TimelinePaginationState = .init(backward: .idle, forward: .endReached),
          listenForSignals: Bool = false) {
@@ -34,10 +36,10 @@ class SignallingTimelineItemProviderMock: TimelineItemProviderMock {
         
         self.itemProxies = itemProxies
         
-        underlyingPaginationState = paginationState
-        underlyingKind = .live
-        underlyingUpdatePublisher = stateSubject.eraseToAnyPublisher()
-        underlyingMembershipChangePublisher = Empty().eraseToAnyPublisher()
+        self.paginationState = paginationState
+        kind = .live
+        updatePublisher = stateSubject.eraseToAnyPublisher()
+        membershipChangePublisher = Empty().eraseToAnyPublisher()
         
         guard listenForSignals else { return }
         
@@ -102,7 +104,7 @@ class SignallingTimelineItemProviderMock: TimelineItemProviderMock {
         
         guard !backPaginationResponses.isEmpty else {
             let newState = TimelinePaginationState(backward: .endReached, forward: .endReached)
-            underlyingPaginationState = newState
+            paginationState = newState
             stateSubject.send((items, newState))
             return
         }
@@ -111,7 +113,7 @@ class SignallingTimelineItemProviderMock: TimelineItemProviderMock {
         let newPaginationState = TimelinePaginationState(backward: backPaginationResponses.isEmpty ? .endReached : .idle,
                                                          forward: .endReached)
         itemProxies = newItems + items
-        underlyingPaginationState = newPaginationState
+        paginationState = newPaginationState
         stateSubject.send((newItems + items, newPaginationState))
         try client?.send(.success)
     }

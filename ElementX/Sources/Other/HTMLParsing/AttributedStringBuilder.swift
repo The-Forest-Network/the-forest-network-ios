@@ -13,7 +13,7 @@ import SwiftSoup
 import Synchronization
 import UIKit
 
-protocol MentionBuilderProtocol {
+nonisolated protocol MentionBuilderProtocol: Sendable {
     func handleUserMention(for attributedString: NSMutableAttributedString, in range: NSRange, url: URL, userID: String, userDisplayName: String?)
     func handleRoomIDMention(for attributedString: NSMutableAttributedString, in range: NSRange, url: URL, roomID: String)
     func handleRoomAliasMention(for attributedString: NSMutableAttributedString, in range: NSRange, url: URL, roomAlias: String, roomDisplayName: String?)
@@ -22,7 +22,7 @@ protocol MentionBuilderProtocol {
     func handleAllUsersMention(for attributedString: NSMutableAttributedString, in range: NSRange)
 }
 
-extension NSAttributedString.Key {
+nonisolated extension NSAttributedString.Key {
     static let MatrixBlockquote: NSAttributedString.Key = .init(rawValue: BlockquoteAttribute.name)
     static let MatrixUserID: NSAttributedString.Key = .init(rawValue: UserIDAttribute.name)
     static let MatrixUserDisplayName: NSAttributedString.Key = .init(rawValue: UserDisplayNameAttribute.name)
@@ -36,13 +36,15 @@ extension NSAttributedString.Key {
     static let InlineCode: NSAttributedString.Key = .init(rawValue: InlineCodeAttribute.name)
 }
 
-struct AttributedStringBuilder: AttributedStringBuilderProtocol {
+nonisolated struct AttributedStringBuilder: AttributedStringBuilderProtocol {
     private static let defaultKey = "default"
     
     private let cacheKey: String
     private let mentionBuilder: MentionBuilderProtocol
     
     private static let attributeMSC4286 = "msc4286-external-payment-details"
+    /// Tags whose content already ends in a newline.
+    private static let lineTerminatingTags: Set = ["p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "ul", "ol", "li"]
     private static let caches = Mutex<[String: LRUCache<String, AttributedString>]>([:])
     
     static func invalidateCaches() {
@@ -119,6 +121,14 @@ struct AttributedStringBuilder: AttributedStringBuilderProtocol {
         
         for node in element.getChildNodes() {
             if let textNode = node as? TextNode {
+                // Markdown generated HTML separates block elements and list items with newlines.
+                // SwiftSoup normalises those whitespace only nodes into stray spaces which misindent
+                // the following line, whereas HTML rendering collapses them away entirely.
+                if !preserveFormatting, textNode.isBlank(),
+                   Self.isLineTerminating(node.previousSibling()) || Self.isLineTerminating(node.nextSibling()) {
+                    continue
+                }
+                
                 // If this node is plain text append the whitespace normalised version
                 if node.parent() == documentBody {
                     result.append(NSAttributedString(string: textNode.text()))
@@ -175,7 +185,7 @@ struct AttributedStringBuilder: AttributedStringBuilderProtocol {
                 content = attributedString(element: childElement, documentBody: documentBody, preserveFormatting: preserveFormatting, listTag: listTag, listIndex: &childIndex, indentLevel: indentLevel)
                 content.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: content.length))
                 
-            case "s", "del":
+            case "s", "del", "strike":
                 content = attributedString(element: childElement, documentBody: documentBody, preserveFormatting: preserveFormatting, listTag: listTag, listIndex: &childIndex, indentLevel: indentLevel)
                 content.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: content.length))
                 
@@ -278,6 +288,14 @@ struct AttributedStringBuilder: AttributedStringBuilderProtocol {
         return result
     }
     
+    private static func isLineTerminating(_ node: Node?) -> Bool {
+        guard let element = node as? Element else {
+            return false
+        }
+        
+        return lineTerminatingTags.contains(element.tagName().lowercased())
+    }
+    
     private static func cacheValue(_ value: AttributedString?, forKey key: String, cacheKey: String) {
         caches.withLock { caches in
             if caches[cacheKey] == nil {
@@ -347,7 +365,7 @@ struct AttributedStringBuilder: AttributedStringBuilderProtocol {
             TextParsingMatch(type: .atRoom, range: match.range)
         })
         
-        guard matches.count > 0 else {
+        guard !matches.isEmpty else {
             return
         }
         
@@ -468,7 +486,7 @@ struct AttributedStringBuilder: AttributedStringBuilderProtocol {
     }
 }
 
-private struct TextParsingMatch {
+private nonisolated struct TextParsingMatch {
     enum MatchType {
         case userID(identifier: String)
         case roomAlias(alias: String)
@@ -492,7 +510,7 @@ private struct TextParsingMatch {
     }
 }
 
-private extension NSMutableAttributedString {
+private nonisolated extension NSMutableAttributedString {
     func setFontPreservingSymbolicTraits(_ newFont: UIFont) {
         enumerateAttribute(.font, in: NSRange(location: 0, length: length)) { value, range, _ in
             if let oldFont = value as? UIFont {
@@ -512,7 +530,7 @@ private extension NSMutableAttributedString {
     }
 }
 
-private extension NSString {
+private nonisolated extension NSString {
     func hasSuffixCharacter(from characterSet: CharacterSet) -> Bool {
         if length == 0 {
             return false

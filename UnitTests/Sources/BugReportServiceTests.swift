@@ -11,6 +11,7 @@ import Combine
 import Foundation
 import Testing
 
+@MainActor
 final class BugReportServiceTests {
     var appSettings: AppSettings!
     var bugReportService: BugReportServiceProtocol!
@@ -20,7 +21,7 @@ final class BugReportServiceTests {
         appSettings.bugReportRageshakeURL.reset()
         
         let bugReportServiceMock = BugReportServiceMock()
-        bugReportServiceMock.underlyingCrashedLastRun = false
+        bugReportServiceMock.lastCrashEventIDSubject = .init(nil)
         bugReportServiceMock.submitBugReportProgressListenerReturnValue = .success(SubmitBugReportResponse(reportURL: "https://www.example.com/123"))
         bugReportService = bugReportServiceMock
     }
@@ -31,7 +32,7 @@ final class BugReportServiceTests {
     
     @Test
     func initialStateWithMockService() {
-        #expect(!bugReportService.crashedLastRun)
+        #expect(bugReportService.lastCrashEventIDSubject.value == nil)
     }
     
     @Test
@@ -61,7 +62,7 @@ final class BugReportServiceTests {
                                        session: .mock,
                                        appHooks: AppHooks())
         #expect(service.isEnabled)
-        #expect(!service.crashedLastRun)
+        #expect(bugReportService.lastCrashEventIDSubject.value == nil)
     }
     
     @Test
@@ -73,10 +74,10 @@ final class BugReportServiceTests {
                                        session: .mock,
                                        appHooks: AppHooks())
         #expect(!service.isEnabled)
-        #expect(!service.crashedLastRun)
+        #expect(bugReportService.lastCrashEventIDSubject.value == nil)
     }
     
-    @Test @MainActor
+    @Test
     func submitBugReportWithRealService() async throws {
         let urlPublisher: CurrentValueSubject<RageshakeConfiguration, Never> = .init(.url("https://example.com/submit"))
         let service = BugReportService(rageshakeURLPublisher: urlPublisher.asCurrentValuePublisher(),
@@ -144,7 +145,7 @@ final class BugReportServiceTests {
     }
 }
 
-private class MockURLProtocol: URLProtocol {
+private nonisolated class MockURLProtocol: URLProtocol {
     override func startLoading() {
         guard let url = request.url else { return }
         let reportURL = url.deletingLastPathComponent().appending(path: "123")
