@@ -210,7 +210,12 @@ final nonisolated class AppSettings: @unchecked Sendable {
     let oAuthStaticRegistrations: [URL: String] = ["https://id.thirdroom.io/realms/thirdroom": "elementx"]
     /// The redirect URL used for OAuth. For the normal case we don't actually need the bundle ID as the web authentication session handles the redirect internally.
     /// However in the case where MAS sends the user to an external app, we need to make sure that the system will open the correct variant of the app (e.g. Nightly).
-    private(set) nonisolated(unsafe) var oAuthRedirectURL: URL! = URL(string: "https://element.io/oauth/ios/\(InfoPlistReader.main.bundleIdentifier)")
+    ///
+    /// Must stay on a domain this app is actually associated with (see `ElementX.entitlements`'s `applinks`/`webcredentials`
+    /// entries for `theforestnetwork.earth`) — MAS's dynamic client registration rejects a redirect URI whose domain doesn't
+    /// match the associated app, and `ASWebAuthenticationSession`'s HTTPS callback requires the Associated Domains
+    /// verification to actually pass. The upstream `element.io` default belongs to Element's own apps, not this fork.
+    private(set) nonisolated(unsafe) var oAuthRedirectURL: URL! = URL(string: "https://theforestnetwork.earth/oauth/ios/\(InfoPlistReader.main.bundleIdentifier)")
     /// A path that is appended to `websiteURL` to form the OAuth `clientURI`. MAS uses `clientURI` as the identifier for a specific app, allowing us to
     /// distinguish the various clients we have for Android, iOS and Web from each other.
     /// Intentionally a distinct property so it can be easily overridden without having to manipulate the website URL.
