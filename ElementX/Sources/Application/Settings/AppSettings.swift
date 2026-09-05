@@ -217,7 +217,10 @@ final nonisolated class AppSettings: @unchecked Sendable {
     private(set) var oAuthClientURIPath: String? = "apps/ios"
     
     var oAuthConfiguration: OAuthConfiguration {
-        OAuthConfiguration(clientName: InfoPlistReader.main.bundleDisplayName,
+        // `productionAppName` ("The Forest Network"), not `bundleDisplayName` ("Forest Network") — MAS shows this
+        // verbatim on its consent screen ("Continue to X?"), which reads better with the article than the short
+        // form used for the home screen icon and permission-dialog sentences.
+        OAuthConfiguration(clientName: InfoPlistReader.main.productionAppName,
                            redirectURI: oAuthRedirectURL,
                            clientURI: oAuthClientURIPath.map { websiteURL.appending(path: $0) } ?? websiteURL,
                            logoURI: logoURL,
