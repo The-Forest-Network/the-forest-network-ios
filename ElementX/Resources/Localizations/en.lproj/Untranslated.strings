@@ -1,4 +1,5 @@
 "screen_home_tab_search" = "Search";
+"screen_onboarding_registration_button_title" = "I've been invited to the Village";
 "screen_onboarding_request_account_content_link" = "Find the trailhead";
 "screen_onboarding_request_account_message" = "Not in the Village yet? %1$@";
 "screen_search_empty_state_message" = "Search for chats and messages";
