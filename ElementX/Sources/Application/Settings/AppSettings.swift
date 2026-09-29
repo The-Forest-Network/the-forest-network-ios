@@ -289,7 +289,7 @@ final nonisolated class AppSettings: @unchecked Sendable {
     let bugReportSentryURL: URL? = Secrets.sentryDSN.map { URL(string: $0)! } // swiftlint:disable:this force_unwrapping
     let bugReportSentryRustURL: URL? = Secrets.sentryRustDSN.map { URL(string: $0)! } // swiftlint:disable:this force_unwrapping
     /// The name allocated by the bug report server
-    private(set) var bugReportApplicationID = "element-x-ios"
+    private(set) var bugReportApplicationID = "forest-network-ios"
     
     // MARK: - Content scanner
     
@@ -306,12 +306,17 @@ final nonisolated class AppSettings: @unchecked Sendable {
     // MARK: - Analytics
     
     /// The configuration to use for analytics. Set to `nil` to disable analytics.
-    let analyticsConfiguration: AnalyticsConfiguration? = AppSettings.makeAnalyticsConfiguration()
+    private(set) var analyticsConfiguration: AnalyticsConfiguration? = AppSettings.makeAnalyticsConfiguration()
     /// The URL to open with more information about analytics terms. When this is `nil` the "Learn more" link will be hidden.
-    private(set) var analyticsTermsURL: URL? = "https://element.io/cookie-policy"
+    private(set) var analyticsTermsURL: URL?
     /// Whether or not there the app is able ask for user consent to enable analytics or sentry reporting.
     var canPromptForAnalytics: Bool {
         analyticsConfiguration != nil || bugReportSentryURL != nil
+    }
+    
+    /// Allows tests to exercise the analytics flow regardless of whether this build has analytics configured.
+    func overrideAnalyticsConfiguration(_ analyticsConfiguration: AnalyticsConfiguration?) {
+        self.analyticsConfiguration = analyticsConfiguration
     }
     
     private static func makeAnalyticsConfiguration() -> AnalyticsConfiguration? {

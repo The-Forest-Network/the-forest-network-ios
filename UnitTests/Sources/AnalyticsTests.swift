@@ -20,6 +20,7 @@ final class AnalyticsTests {
     
     init() {
         appSettings = AppSettings.volatile()
+        appSettings.overrideAnalyticsConfiguration(AnalyticsConfiguration(host: "https://posthog.example.com", apiKey: "test_key"))
         
         analyticsClient = AnalyticsClientMock()
         analyticsClient.isRunning = false
