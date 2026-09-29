@@ -56,8 +56,12 @@ class LiveLocationManager: NSObject, LiveLocationManagerProtocol, CLLocationMana
         
         // Configure CLLocationManager for continuous background tracking.
         self.locationManager.delegate = self
-        self.locationManager.allowsBackgroundLocationUpdates = true
-        self.locationManager.showsBackgroundLocationIndicator = true
+        // Background updates assert unless the `location` background mode is declared, which this
+        // fork omits while live location sharing is disabled (no MapTiler key).
+        if InfoPlistReader.main.supportsBackgroundLocationUpdates {
+            self.locationManager.allowsBackgroundLocationUpdates = true
+            self.locationManager.showsBackgroundLocationIndicator = true
+        }
         
         // Since unpausing location updates is not trivial, let's always keep the location updates running
         // The distance filtering will already take care of not sending updates when not required.

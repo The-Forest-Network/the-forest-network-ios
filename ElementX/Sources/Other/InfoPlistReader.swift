@@ -21,6 +21,8 @@ nonisolated struct InfoPlistReader {
         static let utTypeIdentifierKey = "UTTypeIdentifier"
         static let utDescriptionKey = "UTTypeDescription"
         
+        static let backgroundModes = "UIBackgroundModes"
+        
         static let bundleURLTypes = "CFBundleURLTypes"
         static let bundleURLName = "CFBundleURLName"
         static let bundleURLSchemes = "CFBundleURLSchemes"
@@ -121,6 +123,12 @@ nonisolated struct InfoPlistReader {
         // the bug is fixed, even though the value used in the fork's Info.plist no longer matches the value returned.
         // Maybe in the future the fork should set their own PILLS_UT_TYPE_IDENTIFIER, but for now this works 🤷‍♂️🤷‍♂️🤷‍♂️
         return utType.lowercased()
+    }
+    
+    /// Whether the app declares the `location` background mode, without which enabling background location updates crashes.
+    var supportsBackgroundLocationUpdates: Bool {
+        let backgroundModes: [String]? = infoPlistValue(forKey: Keys.backgroundModes)
+        return backgroundModes?.contains("location") ?? false
     }
     
     // MARK: - Sign in with Classic app
