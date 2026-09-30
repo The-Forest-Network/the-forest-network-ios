@@ -155,11 +155,11 @@ final nonisolated class AppSettings: @unchecked Sendable {
     /// A URL that contains the app's logo that may be used when showing content in a web view.
     private(set) var logoURL: URL = "https://theforestnetwork.earth/mobile-icon.png"
     /// A URL that contains that app's copyright notice.
-    private(set) var copyrightURL: URL = "https://theforestnetwork.earth/copyright"
+    private(set) var copyrightURL: URL = "https://theforestnetwork.earth/village/copyright"
     /// A URL that contains the app's Terms of use.
-    private(set) var acceptableUseURL: URL = "https://theforestnetwork.earth/acceptable-use"
+    private(set) var acceptableUseURL: URL = "https://theforestnetwork.earth/village/terms"
     /// A URL that contains the app's Privacy Policy.
-    private(set) var privacyURL: URL = "https://theforestnetwork.earth/privacy"
+    private(set) var privacyURL: URL = "https://theforestnetwork.earth/village/privacy"
     /// A URL where people without an account can request one, since accounts aren't self-served.
     private(set) var requestAccountURL: URL = "https://theforestnetwork.earth/village/join"
     /// A URL where users can go read more about encryption in general.
