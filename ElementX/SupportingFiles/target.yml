@@ -81,10 +81,12 @@ targets:
         classicAppDeepLinkURL: $(CLASSIC_APP_DEEP_LINK_URL)
         productionAppName: $(PRODUCTION_APP_NAME)
         isNightlyBuild: $(IS_NIGHTLY_BUILD)
-        # End-to-end encryption uses standard algorithms from the Matrix Rust SDK, not
-        # iOS's own crypto, so it isn't exempt. App Store Connect asks the follow-up
-        # questions; France needs a French encryption declaration uploaded there.
-        ITSAppUsesNonExemptEncryption: true
+        # ITSAppUsesNonExemptEncryption is deliberately omitted. Our end-to-end encryption
+        # (standard algorithms from the Matrix Rust SDK) isn't exempt, so `false` would be
+        # wrong, but `true` requires an ITSEncryptionExportComplianceCode from approved
+        # documentation, which we don't have yet (France's declaration is pending).
+        # Without the key, App Store Connect asks the export compliance questions per build.
+        # Once Apple issues a code, set this to true and add ITSEncryptionExportComplianceCode.
         NSUserActivityTypes: [
           INSendMessageIntent,
           INStartCallIntent,
