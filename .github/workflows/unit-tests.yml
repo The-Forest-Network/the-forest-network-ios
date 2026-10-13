@@ -5,8 +5,19 @@ on:
 
   push:
     branches: [develop]
+    # Skip docs-only changes, which can't affect the tests.
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - ".github/ISSUE_TEMPLATE/**"
+      - "LICENSE*"
 
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - ".github/ISSUE_TEMPLATE/**"
+      - "LICENSE*"
 
 permissions: {}
 

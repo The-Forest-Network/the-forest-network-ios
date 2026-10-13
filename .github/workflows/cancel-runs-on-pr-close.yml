@@ -1,0 +1,31 @@
+name: Cancel Runs On PR Close
+
+# A PR's queued or in-progress runs keep going after it's merged or closed. Cancel
+# them to save macOS runner time; after a merge, the develop push run covers it.
+on:
+  pull_request:
+    types: [closed]
+
+permissions: {}
+
+jobs:
+  cancel:
+    name: Cancel this PR's runs
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    steps:
+      - name: Cancel queued and in-progress runs on the PR's branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.head_ref }}
+          CURRENT_RUN: ${{ github.run_id }}
+        run: |
+          for status in queued in_progress; do
+            gh run list --repo "$REPO" --branch "$HEAD_REF" --status "$status" --limit 50 --json databaseId --jq '.[].databaseId'
+          done | sort -u | grep -vx "$CURRENT_RUN" | while read -r id; do
+            echo "Cancelling run $id"
+            gh run cancel "$id" --repo "$REPO" || true
+          done
