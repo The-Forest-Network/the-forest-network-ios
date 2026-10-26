@@ -15,19 +15,26 @@ setup_github_actions_environment() {
     unset HOMEBREW_NO_INSTALL_FROM_API
     export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
     
-    brew update && brew install xcodegen swiftlint git-lfs pkl a7ex/homebrew-formulae/xcresultparser
+    brew update && brew install xcodegen swiftlint git-lfs pkl
     install_swiftformat
 }
 
 install_swiftformat() {
-    # Pinned to the latest stable release instead of tracking --HEAD (upstream Element's
-    # approach). Tracking HEAD means CI can start failing with zero code changes whenever
-    # SwiftFormat's own unreleased rules change. Bump deliberately (reformatting the repo
-    # to match) as part of syncing formatting after an upstream merge, not automatically.
-    if brew list --versions swiftformat &>/dev/null && brew list --versions swiftformat | grep -q HEAD; then
-        brew uninstall swiftformat
-    fi
-    brew install swiftformat
+    # Pinned to an exact release instead of tracking --HEAD (upstream Element's approach) or Homebrew's
+    # latest stable. A newer SwiftFormat adds rules that flag untouched code, so CI would start failing
+    # with zero code changes. Bump deliberately (reformatting the repo to match), not automatically.
+    # Homebrew has no versioned formula, so install the release binary and check it against its published hash.
+    local version="0.63.1"
+    local sha256="385ef1a263ba28685157b98c5536b9c9105e124518f28b7ef8a2bee4b167eaeb"
+    local install_directory="$RUNNER_TEMP/swiftformat-$version"
+    
+    mkdir -p "$install_directory"
+    curl -fsSL "https://github.com/nicklockwood/SwiftFormat/releases/download/$version/swiftformat.zip" -o "$install_directory/swiftformat.zip"
+    echo "$sha256  $install_directory/swiftformat.zip" | shasum -a 256 -c -
+    unzip -o -q "$install_directory/swiftformat.zip" -d "$install_directory"
+    
+    # Later steps pick this up ahead of any Homebrew copy.
+    echo "$install_directory" >> "$GITHUB_PATH"
 }
 
 setup_github_actions_translations_environment() {
