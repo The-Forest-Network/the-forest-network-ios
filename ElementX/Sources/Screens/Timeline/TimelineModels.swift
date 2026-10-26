@@ -22,7 +22,7 @@ enum TimelineViewModelAction {
     case displayEditPollForm(eventID: String, poll: Poll)
     case displayMediaUploadPreviewScreen(mediaURLs: [URL])
     case displaySenderDetails(userID: String)
-    case displayMessageForwarding(forwardingItem: MessageForwardingItem)
+    case displayMessageForwarding(forwardingPayload: MessageForwardingPayload)
     case displayMediaPreview(TimelineMediaPreviewViewModel)
     case displayLocation(StaticLocationData)
     case displayLiveLocation(sender: TimelineItemSender, initialLiveLocationShare: LiveLocationShare)
@@ -66,6 +66,14 @@ enum TimelineViewAction {
     
     case displayTimelineItemMenu(itemID: TimelineItemIdentifier)
     case handleTimelineItemMenuAction(itemID: TimelineItemIdentifier, action: TimelineItemMenuAction)
+    /// The user has confirmed the removal of an item, optionally giving a reason.
+    case redactConfirmed(itemID: TimelineItemIdentifier, reason: String?)
+    
+    /// Add or remove an item from the active multi-selection.
+    case toggleMessageSelection(itemID: TimelineItemIdentifier)
+    case clearMessageSelection
+    /// Forward the selected messages, in timeline order.
+    case forwardMessageSelection
     
     case tappedOnSenderDetails(sender: TimelineItemSender)
     case displayReactionSummary(itemID: TimelineItemIdentifier, key: String)
@@ -129,6 +137,8 @@ struct TimelineViewState: BindableState {
     var linkPreviewsEnabled: Bool
     var jumpToReadMarkerEnabled: Bool
     
+    var messageSelection = TimelineMessageSelectionState()
+    
     let hasPredecessor: Bool
     
     /// The `pinnedEventIDs` are used only to determine if an item is already pinned or not.
@@ -189,8 +199,37 @@ struct TimelineViewStateBindings {
     
     var manageMemberViewModel: ManageRoomMemberSheetViewModel?
     
+    var redactConfirmationInfo: TimelineRedactConfirmationInfo?
+    
     var showTranslation = false
     var textToBeTranslated: String?
+}
+
+/// The state of the multi-selection of messages.
+struct TimelineMessageSelectionState: Equatable {
+    static let limit = 10
+    
+    /// Stays on when every message is unselected, it only ends when closed or once the messages are forwarded.
+    var isActive = false
+    var selectedEventIDs: Set<String> = []
+    
+    var count: Int {
+        selectedEventIDs.count
+    }
+    
+    var isAtLimit: Bool {
+        count >= Self.limit
+    }
+    
+    func contains(_ eventID: String?) -> Bool {
+        guard let eventID else { return false }
+        return selectedEventIDs.contains(eventID)
+    }
+    
+    mutating func end() {
+        isActive = false
+        selectedEventIDs.removeAll()
+    }
 }
 
 struct TimelineItemActionMenuInfo: Equatable, Identifiable {
@@ -219,10 +258,15 @@ struct ReadReceiptSummaryInfo: Identifiable {
     let id: TimelineItemIdentifier
 }
 
+/// The item that the user has asked to remove and must confirm, optionally giving a reason.
+struct TimelineRedactConfirmationInfo: Identifiable {
+    let id: TimelineItemIdentifier
+}
+
 enum TimelineAlertInfoType: Hashable {
     case audioRecodingPermissionError
     case pollEndConfirmation(String)
-    case sendingFailed(reason: String?, sendHandle: SendHandleProxy?)
+    case sendingFailed(reason: String?, itemID: TimelineItemIdentifier, target: SendTarget?)
     case encryptionAuthenticity(String)
     case encryptionForwarder(String)
     case inviteAgain
@@ -310,6 +354,14 @@ enum ScrollDirection: Equatable {
 }
 
 extension TimelineViewState {
+    /// Multi-selection is offered everywhere but the media timelines.
+    var canSelectMessages: Bool {
+        switch timelineKind {
+        case .live, .detached, .thread, .pinned: true
+        case .media: false
+        }
+    }
+    
     /// The user is at the bottom of a live timeline (no jump-to-bottom button needed).
     var isAtBottomAndLive: Bool {
         bindings.isScrolledToBottom && timelineState.isLive

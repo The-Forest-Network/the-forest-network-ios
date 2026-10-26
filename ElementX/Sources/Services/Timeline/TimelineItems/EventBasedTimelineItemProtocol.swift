@@ -28,7 +28,14 @@ nonisolated extension EventBasedTimelineItemProtocol {
     }
     
     var isForwardable: Bool {
-        isRemoteMessage && !(self is PollRoomTimelineItem)
+        isRemoteMessage
+            && !isRedacted
+            && !hasFailedDecryption
+            && !(self is StateRoomTimelineItem)
+            && !(self is UnsupportedRoomTimelineItem)
+            && !(self is PollRoomTimelineItem)
+            && !(self is LiveLocationRoomTimelineItem)
+            && !(self is StickerRoomTimelineItem) // The SDK can only forward m.room.message content and stickers are m.sticker events.
     }
     
     var isRemoteMessage: Bool {

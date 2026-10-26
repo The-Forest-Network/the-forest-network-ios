@@ -36,6 +36,8 @@ struct ClientProxyMockConfiguration {
     
     var maxMediaUploadSize: UInt = 100 * 1024 * 1024
     
+    var totalUnreadNotifications: UInt64 = 0
+    
     class Overrides {
         var joinedRoomIDs: Set<String> = []
     }
@@ -56,9 +58,16 @@ extension ClientProxyMock {
         homeserver = configuration.homeserver
         userIDServerName = configuration.userIDServerName
         
+        totalUnreadNotifications = configuration.totalUnreadNotifications
+        
         roomSummaryProvider = configuration.roomSummaryProvider
         alternateRoomSummaryProvider = RoomSummaryProviderMock(.init())
         staticRoomSummaryProvider = RoomSummaryProviderMock(.init())
+        
+        let searchService = SearchServiceProxyMock()
+        searchService.resultsPublisher = .init([])
+        searchService.paginationStatePublisher = .init(.idle(endReached: true))
+        self.searchService = searchService
         
         roomDirectorySearchProxyReturnValue = configuration.roomDirectorySearchProxy
         
@@ -102,6 +111,7 @@ extension ClientProxyMock {
         unignoreUserReturnValue = .success(())
         
         trackRecentlyVisitedRoomReturnValue = .success(())
+        recentlyVisitedRoomIDsReturnValue = .success([])
         recentlyVisitedRoomsFilterReturnValue = []
         recentConversationCounterpartsReturnValue = []
         
@@ -169,7 +179,7 @@ extension ClientProxyMock {
         
         underlyingMaxMediaUploadSize = .success(configuration.maxMediaUploadSize)
         
-        storeSizesReturnValue = .success(.init(cryptoStore: 1, stateStore: 9, eventCacheStore: 8, mediaStore: 6))
+        storeSizesReturnValue = .success(.init(cryptoStore: 1, stateStore: 9, eventCacheStore: 8, mediaStore: 6, searchIndex: 5))
         
         configurePresenceSendImmediatelyReturnValue = .success(())
     }

@@ -24,6 +24,7 @@ nonisolated protocol MentionBuilderProtocol: Sendable {
 
 nonisolated extension NSAttributedString.Key {
     static let MatrixBlockquote: NSAttributedString.Key = .init(rawValue: BlockquoteAttribute.name)
+    static let MatrixDetails: NSAttributedString.Key = .init(rawValue: DetailsAttribute.name)
     static let MatrixUserID: NSAttributedString.Key = .init(rawValue: UserIDAttribute.name)
     static let MatrixUserDisplayName: NSAttributedString.Key = .init(rawValue: UserDisplayNameAttribute.name)
     static let MatrixRoomDisplayName: NSAttributedString.Key = .init(rawValue: RoomDisplayNameAttribute.name)
@@ -202,6 +203,22 @@ nonisolated struct AttributedStringBuilder: AttributedStringBuilderProtocol {
             case "blockquote":
                 content = attributedString(element: childElement, documentBody: documentBody, preserveFormatting: preserveFormatting, listTag: listTag, listIndex: &childIndex, indentLevel: indentLevel)
                 content.addAttribute(.MatrixBlockquote, value: true, range: NSRange(location: 0, length: content.length))
+                
+            case "details":
+                // Pull the summary out of the tree so that it isn't rendered inline with the content,
+                // it is used as the title of the collapsed component instead.
+                let summaryElement = childElement.getChildNodes()
+                    .lazy
+                    .compactMap { $0 as? Element }
+                    .first { $0.tagName().lowercased() == "summary" }
+                let summary = summaryElement.flatMap { try? $0.text() } ?? ""
+                try? summaryElement?.remove()
+                
+                content = attributedString(element: childElement, documentBody: documentBody, preserveFormatting: preserveFormatting, listTag: listTag, listIndex: &childIndex, indentLevel: indentLevel)
+                
+                // Browsers fall back to a default title when the summary is missing, match them.
+                let title = summary.isEmpty ? L10n.a11yViewDetails : summary
+                content.addAttribute(.MatrixDetails, value: title, range: NSRange(location: 0, length: content.length))
                 
             case "code", "pre":
                 let isCodeBlock = tag == "pre"
@@ -412,21 +429,20 @@ nonisolated struct AttributedStringBuilder: AttributedStringBuilderProtocol {
     
     func addMatrixEntityPermalinkAttributesTo(_ attributedString: NSMutableAttributedString) {
         attributedString.enumerateAttribute(.link, in: .init(location: 0, length: attributedString.length), options: []) { value, range, _ in
-            if value != nil {
-                if let url = value as? URL,
-                   let matrixEntity = parseMatrixEntityFrom(uri: url.absoluteString) {
-                    switch matrixEntity.id {
-                    case .user(let userID):
-                        mentionBuilder.handleUserMention(for: attributedString, in: range, url: url, userID: userID, userDisplayName: nil)
-                    case .room(let roomID):
-                        mentionBuilder.handleRoomIDMention(for: attributedString, in: range, url: url, roomID: roomID)
-                    case .roomAlias(let alias):
-                        mentionBuilder.handleRoomAliasMention(for: attributedString, in: range, url: url, roomAlias: alias, roomDisplayName: nil)
-                    case .eventOnRoomId(let roomID, let eventID):
-                        mentionBuilder.handleEventOnRoomIDMention(for: attributedString, in: range, url: url, eventID: eventID, roomID: roomID)
-                    case .eventOnRoomAlias(let alias, let eventID):
-                        mentionBuilder.handleEventOnRoomAliasMention(for: attributedString, in: range, url: url, eventID: eventID, roomAlias: alias)
-                    }
+            if value != nil,
+               let url = value as? URL,
+               let matrixEntity = parseMatrixEntityFrom(uri: url.absoluteString) {
+                switch matrixEntity.id {
+                case .user(let userID):
+                    mentionBuilder.handleUserMention(for: attributedString, in: range, url: url, userID: userID, userDisplayName: nil)
+                case .room(let roomID):
+                    mentionBuilder.handleRoomIDMention(for: attributedString, in: range, url: url, roomID: roomID)
+                case .roomAlias(let alias):
+                    mentionBuilder.handleRoomAliasMention(for: attributedString, in: range, url: url, roomAlias: alias, roomDisplayName: nil)
+                case .eventOnRoomId(let roomID, let eventID):
+                    mentionBuilder.handleEventOnRoomIDMention(for: attributedString, in: range, url: url, eventID: eventID, roomID: roomID)
+                case .eventOnRoomAlias(let alias, let eventID):
+                    mentionBuilder.handleEventOnRoomAliasMention(for: attributedString, in: range, url: url, eventID: eventID, roomAlias: alias)
                 }
             }
         }
