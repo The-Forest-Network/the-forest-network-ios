@@ -16,6 +16,8 @@ struct RoomListFiltersEmptyStateView: View {
             switch state.activeFilters[0] {
             case .unreads:
                 return L10n.screenRoomlistFilterUnreadsEmptyStateTitle
+            case .mentions:
+                return L10n.screenRoomlistFilterMentionEmptyStateTitle
             case .people:
                 return L10n.screenRoomlistFilterPeopleEmptyStateTitle
             case .rooms:
@@ -59,10 +61,10 @@ struct RoomListFiltersEmptyStateView_Previews: PreviewProvider, TestablePreview 
         VStack(spacing: 24) {
             ForEach(RoomListFilter.allCases) { filter in
                 RoomListFiltersEmptyStateView(state: .init(activeFilters: [filter],
-                                                           appSettings: .volatile()))
+                                                           userSettings: .mock()))
             }
             RoomListFiltersEmptyStateView(state: .init(activeFilters: [.people, .favourites],
-                                                       appSettings: .volatile()))
+                                                       userSettings: .mock()))
         }
         .padding(.bottom)
         .previewLayout(.sizeThatFits)

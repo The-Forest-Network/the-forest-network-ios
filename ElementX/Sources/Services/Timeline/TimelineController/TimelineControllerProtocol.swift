@@ -84,7 +84,7 @@ protocol TimelineControllerProtocol: Sendable {
     
     func toggleReaction(_ reaction: String, to eventOrTransactionID: TimelineItemIdentifier.EventOrTransactionID) async
     
-    func redact(_ eventOrTransactionID: TimelineItemIdentifier.EventOrTransactionID) async
+    func redact(_ eventOrTransactionID: TimelineItemIdentifier.EventOrTransactionID, reason: String?) async
     
     func pin(eventID: String) async
     
@@ -95,6 +95,12 @@ protocol TimelineControllerProtocol: Sendable {
     func debugInfo(for itemID: TimelineItemIdentifier) -> TimelineItemDebugInfo
     
     func sendHandle(for itemID: TimelineItemIdentifier) -> SendHandleProxy?
+    
+    func pendingSendTarget(for itemID: TimelineItemIdentifier) -> SendTarget?
+    
+    func retrySend(_ itemID: TimelineItemIdentifier, target: SendTarget) async
+    
+    func abortSend(_ itemID: TimelineItemIdentifier, target: SendTarget) async
     
     func eventTimestamp(for itemID: TimelineItemIdentifier) -> Date?
     

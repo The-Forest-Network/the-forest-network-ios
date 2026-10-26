@@ -27,9 +27,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gallery, %1$d more media</string>
+			<string>Galleria, %1$d altro media</string>
 			<key>other</key>
-			<string>Gallery, %1$d more medias</string>
+			<string>Galleria, %1$d altri media</string>
 		</dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@COUNT@</string>
@@ -66,6 +66,22 @@
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@COUNT@</string>
 	</dict>
+	<key>action_forward_messages</key>
+	<dict>
+		<key>COUNT</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Forward %1$d message</string>
+			<key>other</key>
+			<string>Forward %1$d messages</string>
+		</dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@COUNT@</string>
+	</dict>
 	<key>common_gallery_reply_attachments</key>
 	<dict>
 		<key>COUNT</key>
@@ -75,9 +91,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d attachment…</string>
+			<string>%1$d allegato…</string>
 			<key>other</key>
-			<string>%1$d attachments…</string>
+			<string>%1$d allegati…</string>
 		</dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@COUNT@</string>
@@ -91,9 +107,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d media item…</string>
+			<string>%1$d elemento multimediale…</string>
 			<key>other</key>
-			<string>%1$d media items…</string>
+			<string>%1$d elementi multimediali…</string>
 		</dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@COUNT@</string>
@@ -267,9 +283,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Shared %1$d attachment</string>
+			<string>Condiviso %1$d allegato</string>
 			<key>other</key>
-			<string>Shared %1$d attachments</string>
+			<string>Condivisi %1$d allegati</string>
 		</dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@COUNT@</string>
@@ -347,9 +363,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d removed message</string>
+			<string>%1$d messaggio rimosso</string>
 			<key>other</key>
-			<string>%1$d removed messages</string>
+			<string>%1$d messaggi rimossi</string>
 		</dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@COUNT@</string>
@@ -530,6 +546,22 @@
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@COUNT@</string>
 	</dict>
+	<key>screen_room_messages_forwarded</key>
+	<dict>
+		<key>COUNT</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d message forwarded</string>
+			<key>other</key>
+			<string>%1$d messages forwarded</string>
+		</dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@COUNT@</string>
+	</dict>
 	<key>screen_room_multiple_knock_requests_title</key>
 	<dict>
 		<key>COUNT</key>
@@ -542,6 +574,22 @@
 			<string>%1$@ +%2$d vogliono entrare in questa stanza</string>
 			<key>other</key>
 			<string>%1$@ +%2$d vogliono entrare in questa stanza</string>
+		</dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@COUNT@</string>
+	</dict>
+	<key>screen_room_selection_count</key>
+	<dict>
+		<key>COUNT</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d message selected</string>
+			<key>other</key>
+			<string>%1$d messages selected</string>
 		</dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@COUNT@</string>
@@ -651,9 +699,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d joined</string>
+			<string>%1$d si è unito</string>
 			<key>other</key>
-			<string>%1$d joined</string>
+			<string>%1$d si sono uniti</string>
 		</dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@COUNT@</string>

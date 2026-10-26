@@ -42,6 +42,10 @@ enum HomeScreenViewAction {
     case resetEncryption
     case skipRecoveryKeyConfirmation
     case dismissNewSoundBanner
+    case screenAppeared
+    case multiAccountAnnouncementAppeared
+    case dismissMultiAccountAnnouncement
+    case addAccount
     case updateVisibleItemRange(Range<Int>)
     case spaceFilters
     case markRoomAsUnread(roomIdentifier: String)
@@ -53,12 +57,16 @@ enum HomeScreenViewAction {
 }
 
 enum HomeScreenRoomListMode: CustomStringConvertible {
+    /// Shows nothing briefly on launch as the cached rooms usually publish in time to go straight to them.
+    case awaitingCachedRooms
     case skeletons
     case empty
     case rooms
     
     var description: String {
         switch self {
+        case .awaitingCachedRooms:
+            return "Awaiting cached rooms"
         case .skeletons:
             return "Showing placeholders"
         case .empty:
@@ -96,15 +104,13 @@ struct HomeScreenViewState: BindableState {
     var shouldShowNewSoundBanner = false
     
     var rooms: [HomeScreenRoom] = []
-    var roomListMode: HomeScreenRoomListMode = .skeletons
+    var roomListMode: HomeScreenRoomListMode = .awaitingCachedRooms
     
     var hasPendingInvitations = false
     
     var selectedRoomID: String?
     
     var hideInviteAvatars = false
-    
-    var roomListActivityVisibility: RoomListActivityVisibility = .current
     
     var reportRoomEnabled = false
     
@@ -115,7 +121,7 @@ struct HomeScreenViewState: BindableState {
     var isRoomListSearchEnabled = true
     
     var visibleRooms: [HomeScreenRoom] {
-        if roomListMode == .skeletons {
+        if roomListMode == .skeletons || roomListMode == .awaitingCachedRooms {
             return placeholderRooms
         }
         
@@ -159,6 +165,7 @@ struct HomeScreenViewStateBindings {
     var leaveRoomAlertItem: LeaveRoomAlertItem?
     
     var spaceFiltersViewModel: ChatsSpaceFiltersScreenViewModel?
+    var isPresentingMultiAccountAnnouncement = false
 }
 
 enum CallBadgeType {
@@ -193,12 +200,11 @@ struct HomeScreenRoom: Identifiable, Equatable {
     let badges: Badges
     struct Badges: Equatable {
         let isDotShown: Bool
+        let notificationCount: UInt
         let isMentionShown: Bool
         let isMuteShown: Bool
         let callBadgeType: CallBadgeType
     }
-    
-    var hasUnreads = false
     
     let name: String
     
@@ -237,7 +243,7 @@ struct HomeScreenRoom: Identifiable, Equatable {
         HomeScreenRoom(id: UUID().uuidString,
                        roomID: nil,
                        type: .placeholder,
-                       badges: .init(isDotShown: false, isMentionShown: false, isMuteShown: false, callBadgeType: .none),
+                       badges: .init(isDotShown: false, notificationCount: 0, isMentionShown: false, isMuteShown: false, callBadgeType: .none),
                        name: "Placeholder room name",
                        isDirect: false,
                        isHighlighted: false,
@@ -254,16 +260,15 @@ struct HomeScreenRoom: Identifiable, Equatable {
 
 extension HomeScreenRoom {
     init(summary: RoomSummary,
-         roomListActivityVisibility: RoomListActivityVisibility = .current,
+         showAllActivity: Bool = true,
          seenInvites: Set<String> = []) {
         let roomID = summary.id
         
         let isUnseenInvite = summary.joinRequestType?.isInvite == true && !seenInvites.contains(roomID)
         
-        let isDotShown = switch roomListActivityVisibility {
-        case .current:
+        let isDotShown = if showAllActivity {
             summary.hasUnreadMessages || summary.hasUnreadMentions || summary.hasUnreadNotifications || summary.isMarkedUnread || isUnseenInvite
-        case .hide, .show:
+        } else {
             (!summary.isMuted && (summary.hasUnreadNotifications || summary.hasUnreadMentions)) || summary.isMarkedUnread || isUnseenInvite
         }
         
@@ -287,10 +292,10 @@ extension HomeScreenRoom {
                   roomID: summary.id,
                   type: type,
                   badges: .init(isDotShown: isDotShown,
+                                notificationCount: summary.unreadNotificationsCount,
                                 isMentionShown: isMentionShown,
                                 isMuteShown: isMuteShown,
                                 callBadgeType: callBadge),
-                  hasUnreads: summary.hasUnreadMessages,
                   name: summary.name,
                   isDirect: summary.isDirect,
                   isHighlighted: isHighlighted,

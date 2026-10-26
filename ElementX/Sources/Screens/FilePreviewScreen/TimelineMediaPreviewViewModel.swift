@@ -128,17 +128,17 @@ class TimelineMediaPreviewViewModel: TimelineMediaPreviewViewModelType {
             default:
                 MXLog.error("Received unexpected action: \(action)")
             }
-        case .redactConfirmation(let item):
-            redactItem(item)
+        case .redactConfirmation(let item, let reason):
+            redactItem(item, reason: reason)
         case .timelineEndReached:
             showTimelineEndIndicator()
         }
     }
     
     private func forwardItem(itemID: TimelineItemIdentifier) async {
-        guard let forwardingItem = await timelineViewModel.makeForwardingItem(for: itemID) else { return }
+        guard let forwardingPayload = await timelineViewModel.makeForwardingPayload(for: [itemID]) else { return }
         state.previewControllerDriver.send(.dismissDetailsSheet)
-        actionsSubject.send(.displayMessageForwarding(forwardingItem))
+        actionsSubject.send(.displayMessageForwarding(forwardingPayload))
     }
     
     private func updateCurrentItem(_ previewItem: TimelineMediaPreviewItem) async {
@@ -148,9 +148,11 @@ class TimelineMediaPreviewViewModel: TimelineMediaPreviewViewModelType {
         setCurrentItem(previewItem)
         
         if case let .media(mediaItem) = previewItem {
-            guard mediaItem.fileHandle == nil, let source = mediaItem.mediaSource else { return }
-            
-            guard await checkSourceIsSafeIfNeeded(for: mediaItem, source: source) else { return }
+            guard mediaItem.fileHandle == nil,
+                  let source = mediaItem.mediaSource,
+                  await checkSourceIsSafeIfNeeded(for: mediaItem, source: source) else {
+                return
+            }
             
             switch await mediaProvider.loadFileFromSource(source, filename: mediaItem.filename) {
             case .success(let handle):
@@ -267,8 +269,8 @@ class TimelineMediaPreviewViewModel: TimelineMediaPreviewViewModelType {
         }
     }
     
-    private func redactItem(_ item: TimelineMediaPreviewItem.Media) {
-        timelineViewModel.context.send(viewAction: .handleTimelineItemMenuAction(itemID: item.timelineItem.id, action: .redact(isMedia: true)))
+    private func redactItem(_ item: TimelineMediaPreviewItem.Media, reason: String) {
+        timelineViewModel.context.send(viewAction: .redactConfirmed(itemID: item.timelineItem.id, reason: reason))
         state.bindings.redactConfirmationItem = nil
         state.previewControllerDriver.send(.dismissDetailsSheet)
         actionsSubject.send(.dismiss)

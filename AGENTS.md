@@ -14,6 +14,9 @@ PRs must follow rules. Prefer Xcode MCP tools over terminal commands.
 - **SwiftLint** (.swiftlint.yml) + **SwiftFormat** (.swiftformat) enforce style on build. Warnings show in Xcode. Build before **XcodeRefreshCodeIssuesInFile**.
 - Follow [Swift API Design Guidelines](https://www.swift.org/documentation/api-design-guidelines/) everywhere, Rust SDK wrappers too (`ID` not `Id`, `URL` not `Url`, `configuration` not `config` or `cfg`).
 - File headers live in `IDETemplateMacros.plist`.
+- **Import `SwiftUI`, not `UIKit`** — need `UIPasteboard` etc, `SwiftUI` bring it. `SwiftUI` re-export `Foundation` too, so no `import Foundation` beside it.
+- **Clean Code** (Robert C. Martin) Newspaper order: headline first, detail down. Stepdown rule: caller above callee, calls point down. Tests: test cases first, helpers below. Swift idiom always win on clash.
+- **Member order in type**: properties (stored + computed, public + private) → `init` → functions. `View` types: properties → `init` → views (`body` first) → functions.
 
 ### Comments
 
@@ -52,10 +55,12 @@ PRs must follow rules. Prefer Xcode MCP tools over terminal commands.
 
 ## Pull Request Guidelines
 
+- New branch from `develop` must not track `develop`.
 - Sentence-style titles (no conventional commits).
 - Exactly one `pr-` label (see `.github/release.yml`).
 - Title = changelog entry — descriptive, no "Fixes #…".
 - Leave description template for developer. Point them to [contributing etiquette](CONTRIBUTING.md#etiquette).
+- Only fill template LLM line: tick box, name model + harness that made PR (e.g. Claude Opus 5.5, Claude Code).
 - Screenshots/videos for visual changes.
 - 500 additions max — split big changes.
 - Commits need title + description. No tiny commits, no massive commits.
@@ -269,13 +274,16 @@ Services = where product-level opinions live (Rust SDK stays spec-faithful).
 - Inject via `init` parameters.
 - Screen coordinators get `Parameters` struct with specific dependencies.
 - `CommonFlowParameters` flow-coordinator-only.
-- `ServiceLocator` **deprecated** — never use services directly. Always inject from above.
+- `UserSession` = per-account dependency container (`clientProxy`, `userSettings`, `mediaProvider`…).
+  - Need 2+ from it? Pass `userSession` down. Need 1? Pass that one direct.
+  - Receiver may store only pieces it need (e.g. `clientProxy`, `userSettings`).
+  - Never pass `userSession` plus value it already owns (e.g. `userSession` + `userSettings`).
 
 ---
 
 ## Concurrency & Actors
 
-- All targets **Swift 6.2**, approachable concurrency.
+- All targets **Swift 6** language mode (`SWIFT_VERSION: 6`), approachable concurrency. Compiler version come from Xcode toolchain.
 - **ElementX** app, **UnitTests** + **PreviewTests**: `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` — no redundant `@MainActor`. Other targets (incl. app extensions) nonisolated.
 - Services + data-layer types: `nonisolated` + `Sendable` when background work need.
 - Never `@unchecked Sendable` / `nonisolated(unsafe)`. Dev add these.
@@ -370,6 +378,22 @@ Same pattern for publishers.
 
 ---
 
+## Xcode Agent Skills
+
+Apple ship agent skills with Xcode 27. Installed per machine, not in repo. Skill missing? Suggest user export them (Xcode running): `xcrun agent skills export --output-dir <agent skills dir>` (Claude Code: `~/.claude/skills`). User decline? Skip skill, carry on.
+
+Skill clash this file? This file win. Build settings, entitlements, Info.plist keys, targets → `project.yml`/`target.yml` + `xcodegen`, never `.xcodeproj` or Xcode project-write tools (`UpdateTargetBuildSetting`, `AddEntitlement`…). API newer than target's deployment target → `#available`.
+
+| Skill | Best moment |
+|-------|-------------|
+| `swiftui-specialist` | Writing/reviewing views: data flow, `ForEach`/`List` identity, environment, perf. `L10n` + Compound tokens beat its samples. |
+| `device-interaction` | Runtime check of UI/flow change (subagent skill). Xcode must open this checkout. No login: env `UI_TESTS_SCREEN=<UITestsScreenIdentifier case>` launch that case's mock fixture, no real session. `roomLayout*`, `appLockFlow*`, `*Pagination` need UITests runner. |
+| `swiftui-whats-new-27` | SDK 27 `@State`/`@ContentBuilder` compile errors, or adopting iOS 27 SwiftUI APIs. Keep `AlertInfo` alerts. |
+| `modernize-tests` | Modernizing UnitTests suites (`@Test(arguments:)`, `withKnownIssue`, `#require`). XCUI targets stay XCTest. Keep `deferFulfillment`/`waitForConfirmation` — bare `confirmation()` no wait async. No `.serialized`/`@MainActor` adds. |
+| `app-intents-specialist`, `app-intents-whats-new-27` | Adding App Intents/Shortcuts/Siri/controls (full support planned; iOS 26+ APIs → `-whats-new-27`). Not SiriKit `IN*` code. Intent strings need `LocalizedStringResource` — `L10n` return `String`. |
+
+---
+
 ## Key Files
 
 | File | Purpose |
@@ -378,7 +402,7 @@ Same pattern for publishers.
 | `app.yml` | App-level XcodeGen config |
 | `.swiftlint.yml` | SwiftLint rules |
 | `.swiftformat` | SwiftFormat rules |
-| `Dangerfile.swift` | Danger PR checks |
+| `.github/workflows/pr-checks.yml` | PR metadata checks (title, labels, size, screenshots) |
 | `Package.swift` | SPM manifest (Tools CLI) |
 | `localazy.json` | Localazy translation config |
 | `codecov.yml` | Codecov config |

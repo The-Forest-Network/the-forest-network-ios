@@ -18,7 +18,7 @@ class OAuthAuthenticationPresenter: NSObject {
     private let redirectURL: URL
     private let presentationAnchor: UIWindow
     private let appMediator: AppMediatorProtocol
-    private let appHooks: AppHooks
+    private let presenterHook: OAuthAuthenticationPresenterHookProtocol
     private let userIndicatorController: UserIndicatorControllerProtocol
     
     /// The data required to complete a request.
@@ -39,13 +39,13 @@ class OAuthAuthenticationPresenter: NSObject {
          redirectURL: URL,
          presentationAnchor: UIWindow,
          appMediator: AppMediatorProtocol,
-         appHooks: AppHooks,
+         presenterHook: OAuthAuthenticationPresenterHookProtocol,
          userIndicatorController: UserIndicatorControllerProtocol) {
         self.authenticationService = authenticationService
         self.redirectURL = redirectURL
         self.presentationAnchor = presentationAnchor
         self.appMediator = appMediator
-        self.appHooks = appHooks
+        self.presenterHook = presenterHook
         self.userIndicatorController = userIndicatorController
         super.init()
     }
@@ -60,7 +60,7 @@ class OAuthAuthenticationPresenter: NSObject {
     /// land the user in an existing cached MAS session instead of the sign-up form (there's never a cached session
     /// to land in) — see element-hq/matrix-authentication-service#3429.
     func authenticate(using oAuthData: OAuthAuthorizationDataProxy, useEphemeralSession: Bool = false) async -> Result<UserSessionProtocol, AuthenticationServiceError> {
-        let authenticationURL = appHooks.oAuthPresenterHook.update(oAuthData.url)
+        let authenticationURL = presenterHook.update(oAuthData.url, homeserver: oAuthData.homeserver)
         
         let response = await withCheckedContinuation { continuation in
             let session = ASWebAuthenticationSession(url: authenticationURL, callback: .oAuthRedirectURL(redirectURL)) { url, error in
