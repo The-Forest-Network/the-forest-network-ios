@@ -20,6 +20,10 @@ internal nonisolated enum UntranslatedL10n {
   internal static func screenOnboardingRequestAccountMessage(_ p1: Any) -> String {
     return UntranslatedL10n.tr("Untranslated", "screen_onboarding_request_account_message", String(describing: p1))
   }
+  /// Unsupported call. Ask if the caller can use the new %1$@ app.
+  internal static func screenRoomTimelineLegacyCallIos(_ p1: Any) -> String {
+    return UntranslatedL10n.tr("Untranslated", "screen_room_timeline_legacy_call_ios", String(describing: p1))
+  }
   /// Search for chats and messages
   internal static var screenSearchEmptyStateMessage: String { return UntranslatedL10n.tr("Untranslated", "screen_search_empty_state_message") }
   /// Start searching...
