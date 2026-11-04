@@ -24,7 +24,8 @@ struct UserProfileScreenViewState: BindableState {
     var isVerified: Bool?
     var permalink: URL?
     var dmRoomID: String?
-    var isCallingEnabled = true
+    // Hidden until the server has a MatrixRTC backend (LiveKit) to connect calls.
+    var isCallingEnabled = false
     
     var bindings: UserProfileScreenViewStateBindings
     

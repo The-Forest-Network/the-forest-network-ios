@@ -56,7 +56,8 @@ struct RoomScreenViewState: BindableState {
     var canSendMessage = true
     
     /// Whether or not starting a call is supported.
-    var isCallingEnabled = true
+    // Hidden until the server has a MatrixRTC backend (LiveKit) to connect calls.
+    var isCallingEnabled = false
     /// Whether or not the user is allowed to join calls in this room.
     var canJoinCall = false
     /// Whether or not this room currently has a call in progress.
