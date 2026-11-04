@@ -92,7 +92,7 @@ class ElementCallService: NSObject, ElementCallServiceProtocol, PKPushRegistryDe
         super.init()
         
         pushRegistry.delegate = self
-        pushRegistry.desiredPushTypes = [.voIP]
+        // VoIP push registration is disabled until the server can send VoIP pushes and the `voip` background mode is restored.
         
         self.callProvider.setDelegate(self, queue: nil)
     }

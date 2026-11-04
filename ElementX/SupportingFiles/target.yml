@@ -100,8 +100,7 @@ targets:
         UIBackgroundModes: [
           audio,
           fetch,
-          processing,
-          voip
+          processing
         ]
         BGTaskSchedulerPermittedIdentifiers: [
           $(BASE_BUNDLE_IDENTIFIER).background.refresh
