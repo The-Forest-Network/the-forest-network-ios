@@ -277,6 +277,9 @@ final class RoomScreenViewModelTests {
                                             appHooks: AppHooks(),
                                             analyticsService: AnalyticsServiceMock(.init()),
                                             userIndicatorController: UserIndicatorControllerMock())
+        // Calling is hidden by default until the server supports it.
+        #expect(!viewModel.state.shouldShowCallButton)
+        viewModel.state.isCallingEnabled = true
         #expect(viewModel.state.shouldShowCallButton)
         
         // When a call starts in this room.
