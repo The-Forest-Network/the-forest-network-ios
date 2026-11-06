@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import MatrixRustSDKMocks
 import Testing
 import UIKit
@@ -59,6 +59,7 @@ final class AuthenticationStartScreenViewModelTests {
     @Test
     func provisionedOAuthState() async throws {
         // Given a view model that has been provisioned with a server that supports OAuth.
+        setAllowedAccountProviders(["company.com"], allowOtherAccountProviders: true)
         await setupViewModel(provisioningParameters: .init(accountProvider: "company.com", loginHint: "user@company.com"))
         #expect(authenticationService.homeserver.value.loginMode == .unknown)
         #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
@@ -79,6 +80,7 @@ final class AuthenticationStartScreenViewModelTests {
     @Test
     func provisionedPasswordState() async throws {
         // Given a view model that has been provisioned with a server that does not support OAuth.
+        setAllowedAccountProviders(["company.com"], allowOtherAccountProviders: true)
         await setupViewModel(provisioningParameters: .init(accountProvider: "company.com", loginHint: "user@company.com"), supportsOAuth: false)
         #expect(authenticationService.homeserver.value.loginMode == .unknown)
         #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
@@ -116,6 +118,60 @@ final class AuthenticationStartScreenViewModelTests {
     }
     
     @Test
+    func singleProviderRegisterState() async throws {
+        // Given a view model for an app that only allows the use of a single provider that supports OAuth
+        // and its `create` prompt.
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel(supportsOAuthCreatePrompt: true)
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
+        
+        // When tapping the create account button the locked provider should be used directly, skipping
+        // the server selection screen entirely (there's nothing to choose from a single locked provider).
+        let deferred = deferFulfillment(viewModel.actions) { $0.isRegisterDirectlyWithOAuth }
+        context.send(viewAction: .register)
+        try await deferred.fulfill()
+        
+        // Then the `create` prompt should be used, since registration is what was asked for and the server supports it.
+        #expect(clientFactory.makeClientHomeserverAddressSessionDirectoriesPassphraseClientSessionDelegateAppSettingsAppHooksCallsCount == 1)
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 1)
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesReceivedArguments?.prompt == .create)
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesReceivedArguments?.loginHint == nil)
+        #expect(authenticationService.flow == .register)
+    }
+    
+    @Test
+    func singleProviderRegisterWithoutCreatePromptState() async throws {
+        // Given a view model for an app that only allows the use of a single provider that supports OAuth
+        // but not its `create` prompt.
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel(supportsOAuthCreatePrompt: false)
+        
+        // When tapping the create account button.
+        let deferred = deferFulfillment(viewModel.actions) { $0.isRegisterDirectlyWithOAuth }
+        context.send(viewAction: .register)
+        try await deferred.fulfill()
+        
+        // Then the `consent` prompt should be used instead, falling back to the same prompt used for login.
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesReceivedArguments?.prompt == .consent)
+    }
+    
+    @Test
+    func singleProviderRegisterUnsupportedState() async throws {
+        // Given a view model for an app that only allows the use of a single provider that doesn't support OAuth,
+        // meaning registration isn't possible (there's no password/UIA registration implementation).
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel(supportsOAuth: false)
+        
+        // When tapping the create account button configuring the service for registration should fail
+        // and an error should be shown, without ever requesting an OAuth URL.
+        let deferred = deferFulfillment(context.observe(\.viewState.bindings.alertInfo)) { $0 != nil }
+        context.send(viewAction: .register)
+        try await deferred.fulfill()
+        
+        #expect(client.urlForOauthOauthConfigurationPromptLoginHintDeviceIdAdditionalScopesCallsCount == 0)
+    }
+    
+    @Test
     func singleProviderPasswordState() async throws {
         // Given a view model that for an app that only allows the use of a single provider that does not support OAuth.
         setAllowedAccountProviders(["company.com"])
@@ -140,6 +196,7 @@ final class AuthenticationStartScreenViewModelTests {
     func classicAppAccount() async throws {
         // Given a view model with a Classic app account whose server name resolves successfully.
         let classicAppAccount = makeClassicAppAccount()
+        setAllowedAccountProviders(["company.com"])
         await setupViewModel(classicAppAccount: classicAppAccount)
         guard case .welcomeBack(let account) = context.viewState.classicAppMode else {
             Issue.record("Expected classicAppMode to be .welcomeBack")
@@ -164,6 +221,7 @@ final class AuthenticationStartScreenViewModelTests {
         // Given a view model where the Classic app account's server name has no well-known file.
         let classicAppAccount = makeClassicAppAccount(serverName: "unknown-server.org",
                                                       homeserverURL: "https://matrix.company.com")
+        setAllowedAccountProviders(["unknown-server.org"])
         await setupViewModel(classicAppAccount: classicAppAccount)
         guard case .welcomeBack(let account) = context.viewState.classicAppMode else {
             Issue.record("Expected classicAppMode to be .welcomeBack")
@@ -187,6 +245,7 @@ final class AuthenticationStartScreenViewModelTests {
     func classicAppAccountOnUnsupportedServer() async {
         // Given a view model with a Classic app account whose server supports neither OAuth nor password login.
         let classicAppAccount = makeClassicAppAccount()
+        setAllowedAccountProviders(["company.com"])
         await setupViewModel(classicAppAccount: classicAppAccount, supportsOAuth: false, supportsPasswordLogin: false)
         guard case .welcomeBack(let account) = context.viewState.classicAppMode else {
             Issue.record("Expected classicAppMode to be .welcomeBack")
@@ -241,6 +300,7 @@ final class AuthenticationStartScreenViewModelTests {
     func classicAppAccountRequiresBackup() async throws {
         // Given a view model with a Classic app account that requires backup before signing in.
         let classicAppAccount = makeClassicAppAccount()
+        setAllowedAccountProviders(["company.com"])
         await setupViewModel(classicAppAccount: classicAppAccount, availableSecrets: .requiresBackup)
         guard case .welcomeBack(let account) = context.viewState.classicAppMode else {
             Issue.record("Expected classicAppMode to be .welcomeBack")
@@ -276,11 +336,12 @@ final class AuthenticationStartScreenViewModelTests {
     private func setupViewModel(classicAppAccount: ClassicAppAccount? = nil,
                                 provisioningParameters: AccountProvisioningParameters? = nil,
                                 supportsOAuth: Bool = true,
+                                supportsOAuthCreatePrompt: Bool = false,
                                 supportsPasswordLogin: Bool = true,
                                 availableSecrets: ClassicAppAccount.AvailableSecrets = .complete) async {
         // Manually create a configuration as the default homeserver address setting is immutable.
         client = ClientSDKMock(.init(oAuthLoginURL: supportsOAuth ? "https://account.company.com/authorize" : nil,
-                                     supportsOAuthCreatePrompt: false,
+                                     supportsOAuthCreatePrompt: supportsOAuthCreatePrompt,
                                      supportsPasswordLogin: supportsPasswordLogin))
         // Map both the server name and the homeserver URL so fallback lookups work.
         let homeserverClients: [String: ClientSDKMock] = ["company.com": client,
@@ -330,12 +391,13 @@ final class AuthenticationStartScreenViewModelTests {
                           accessToken: "accessToken")
     }
     
-    private func setAllowedAccountProviders(_ providers: [String]) {
+    private func setAllowedAccountProviders(_ providers: [String], allowOtherAccountProviders: Bool = false) {
         appSettings.override(accountProviders: providers,
-                             allowOtherAccountProviders: false,
+                             allowOtherAccountProviders: allowOtherAccountProviders,
                              hideBrandChrome: false,
                              pushGatewayBaseURL: appSettings.pushGatewayBaseURL,
                              oAuthRedirectURL: appSettings.oAuthRedirectURL,
+                             oAuthClientURIPath: appSettings.oAuthClientURIPath,
                              websiteURL: appSettings.websiteURL,
                              logoURL: appSettings.logoURL,
                              copyrightURL: appSettings.copyrightURL,
@@ -365,6 +427,13 @@ extension AuthenticationStartScreenViewModelAction {
     var isLoginDirectlyWithPassword: Bool {
         switch self {
         case .loginDirectlyWithPassword: true
+        default: false
+        }
+    }
+    
+    var isRegisterDirectlyWithOAuth: Bool {
+        switch self {
+        case .registerDirectlyWithOAuth: true
         default: false
         }
     }

@@ -1,0 +1,38 @@
+name: Sync SAS strings
+on:
+  workflow_dispatch:
+  schedule:
+    # At 00:00 on every Monday UTC
+    - cron: "0 0 * * 1"
+
+permissions: {}
+
+jobs:
+  sync-sas-strings:
+    runs-on: macos-26
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Select Xcode
+        run: source ci_scripts/ci_common.sh && xcode_select_for_github_actions
+
+      - name: Generate SAS strings
+        run: swift run -q tools generate-sas
+
+      - name: Create PR for SAS Strings
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          commit-message: Sync SAS Strings
+          title: Sync SAS Strings
+          body: |
+            - Update SAS Strings from matrix-spec.
+          labels: pr-i18n
+          branch: sync-sas-strings
+          base: develop
+          add-paths: |
+            **/SAS.strings

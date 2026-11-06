@@ -38,6 +38,7 @@
       {
         "type": "ios-strings",
         "changeExtension": "strings",
+        "excludeKeys": ["NSCameraUsageDescription", "NSLocationWhenInUseUsageDescription", "NSMicrophoneUsageDescription", "NSLocationAlwaysAndWhenInUseUsageDescription"],
         "output": "ElementX/Resources/Localizations/${iosLprojFolder}/${file}",
         "conditions": [
           "equals: ${languageCode}, en | equals: ${file}, InfoPlist.json"
@@ -84,6 +85,7 @@
         "group": "all",
         "type": "ios-strings",
         "changeExtension": "strings",
+        "excludeKeys": ["NSCameraUsageDescription", "NSLocationWhenInUseUsageDescription", "NSMicrophoneUsageDescription", "NSLocationAlwaysAndWhenInUseUsageDescription"],
         "output": "ElementX/Resources/Localizations/${iosLprojFolder}/${file}",
         "conditions": [
           "equals: ${file}, InfoPlist.json"

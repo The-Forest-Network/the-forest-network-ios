@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Foundation
 import MatrixRustSDK
 import Testing
@@ -157,6 +157,7 @@ struct SessionV1: Equatable {
 }
 
 enum SlidingSyncVersionV1: Equatable {
+    // periphery:ignore - documents a structure the app used to write
     case none
     case proxy(url: String)
     case native

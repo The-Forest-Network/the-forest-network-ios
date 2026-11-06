@@ -7,7 +7,7 @@
 //
 
 import Combine
-@testable import ElementX
+@testable import ForestNetwork
 import Foundation
 import Testing
 

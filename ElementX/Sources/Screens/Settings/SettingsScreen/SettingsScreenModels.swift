@@ -8,9 +8,10 @@
 
 import SwiftUI
 
-enum SettingsScreenViewModelAction: Equatable {
+enum SettingsScreenViewModelAction {
     case close
     case userDetails
+    case userStatusEmojiPicker(EmojiPickerScreenContinuation)
     case linkNewDevice
     case manageAccount(url: URL)
     case analytics
@@ -34,12 +35,11 @@ enum SettingsScreenSecuritySectionMode {
 
 struct SettingsScreenViewState: BindableState {
     var deviceID: String?
-    var userID: String
+    var userProfile: UserProfile
+    var showUserStatusInput = false
     var showLinkNewDeviceButton: Bool
     var accountProfileURL: URL?
     var showAccountDeactivation: Bool
-    var userAvatarURL: URL?
-    var userDisplayName: String?
     var showDeveloperOptions: Bool
     
     var securitySectionMode = SettingsScreenSecuritySectionMode.none
@@ -53,15 +53,36 @@ struct SettingsScreenViewState: BindableState {
     let navigationBarVisibility: Visibility
     
     var bindings = SettingsScreenViewStateBindings()
+    
+    var userStatusRowMode: SettingsScreenUserStatusRow.Mode {
+        if bindings.isShowingCustomStatusField {
+            .customStatusInput(emoji: bindings.customStatusEmoji)
+        } else if let displayedStatus = userProfile.status.displayed {
+            .showingStatus(displayedStatus)
+        } else {
+            .pickStatusButton
+        }
+    }
 }
 
 struct SettingsScreenViewStateBindings {
+    var isPresentingStatusPicker = false
+    var customStatusEmoji: Character = "😄"
+    var isShowingCustomStatusField = false {
+        didSet {
+            if !isShowingCustomStatusField {
+                customStatusEmoji = "😄" // Reset the emoji.
+            }
+        }
+    }
+    
     var isPresentingAccountDeactivationConfirmation = false
 }
 
 enum SettingsScreenViewAction {
     case close
     case userDetails
+    case userStatus(UserStatusAction)
     case analytics
     case appLock
     case reportBug
@@ -77,4 +98,19 @@ enum SettingsScreenViewAction {
     case labs
     case logout
     case deactivateAccount
+    
+    enum UserStatusAction {
+        /// Show status picker sheet to select a preset status.
+        case pickStatus
+        /// Dismiss the picker sheet and show the custom status input.
+        case customStatus
+        /// Show the emoji picker to select the emoji for the custom status.
+        case pickCustomEmoji
+        /// Set the user's status to the provided value.
+        case set(UserStatus.Raw)
+        /// Clears the user's currently displayed status.
+        case clear
+        /// Cancel user status picking/input.
+        case cancel
+    }
 }

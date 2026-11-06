@@ -7,17 +7,13 @@
 //
 
 import Combine
-@testable import ElementX
+@testable import ForestNetwork
 import Foundation
 import Testing
 
 @MainActor
 struct MediaPlayerProviderTests {
     private var mediaPlayerProvider: MediaPlayerProvider
-    
-    private let oggMimeType = "audio/ogg"
-    private let someURL = URL.mockMXCAudio
-    private let someOtherURL = URL.mockMXCFile
     
     init() async {
         mediaPlayerProvider = MediaPlayerProvider()
@@ -41,7 +37,6 @@ struct MediaPlayerProviderTests {
     func detachAllStates() {
         let audioPlayer = AudioPlayerMock()
         audioPlayer.actions = PassthroughSubject<AudioPlayerAction, Never>().eraseToAnyPublisher()
-        audioPlayer.playbackSpeed = 1.0
         
         let audioPlayerStates = Array(repeating: AudioPlayerState(id: .timelineItemIdentifier(.randomEvent), title: "", duration: 0), count: 10)
         for audioPlayerState in audioPlayerStates {
@@ -62,7 +57,6 @@ struct MediaPlayerProviderTests {
     func detachAllStatesWithException() {
         let audioPlayer = AudioPlayerMock()
         audioPlayer.actions = PassthroughSubject<AudioPlayerAction, Never>().eraseToAnyPublisher()
-        audioPlayer.playbackSpeed = 1.0
         
         let audioPlayerStates = Array(repeating: AudioPlayerState(id: .timelineItemIdentifier(.randomEvent), title: "", duration: 0), count: 10)
         for audioPlayerState in audioPlayerStates {

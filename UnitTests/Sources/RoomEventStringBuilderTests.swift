@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import MatrixRustSDK
 import Testing
 
@@ -74,7 +74,11 @@ struct RoomEventStringBuilderTests {
         
         return .init(item: .init(configuration: .init(eventID: "1234",
                                                       sender: senderID,
-                                                      senderProfile: .ready(displayName: senderDisplayName, displayNameAmbiguous: senderDisplayNameAmbiguous, avatarUrl: nil),
+                                                      senderProfile: .ready(displayName: senderDisplayName,
+                                                                            displayNameAmbiguous: senderDisplayNameAmbiguous,
+                                                                            avatarUrl: nil,
+                                                                            status: nil,
+                                                                            call: nil),
                                                       isOwn: senderID == ownUserID,
                                                       content: .msgLike(content: .init(kind: .message(content: .init(msgType: content,
                                                                                                                      body: message,
@@ -101,7 +105,11 @@ struct RoomEventStringBuilderTests {
                               question: String = "Which is better?") -> EventTimelineItemProxy {
         .init(item: .init(configuration: .init(eventID: "1234",
                                                sender: senderID,
-                                               senderProfile: .ready(displayName: senderDisplayName, displayNameAmbiguous: senderDisplayNameAmbiguous, avatarUrl: nil),
+                                               senderProfile: .ready(displayName: senderDisplayName,
+                                                                     displayNameAmbiguous: senderDisplayNameAmbiguous,
+                                                                     avatarUrl: nil,
+                                                                     status: nil,
+                                                                     call: nil),
                                                isOwn: senderID == ownUserID,
                                                content: .msgLike(content: .init(kind: .poll(question: question,
                                                                                             kind: .disclosed,

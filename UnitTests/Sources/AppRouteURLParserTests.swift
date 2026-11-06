@@ -6,10 +6,11 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Foundation
 import Testing
 
+@MainActor
 struct AppRouteURLParserTests {
     var appSettings: AppSettings
     var appRouteURLParser: AppRouteURLParser

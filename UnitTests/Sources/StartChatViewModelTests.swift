@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 
 @MainActor
@@ -20,8 +20,6 @@ struct StartChatScreenViewModelTests {
     }
     
     init() {
-        let appSettings = AppSettings.volatile()
-        
         clientProxy = .init(.init(userID: ""))
         userDiscoveryService = UserDiscoveryServiceMock()
         userDiscoveryService.searchProfilesWithReturnValue = .success([])
@@ -29,8 +27,7 @@ struct StartChatScreenViewModelTests {
         viewModel = StartChatScreenViewModel(userSession: userSession,
                                              analytics: AnalyticsServiceMock(.init()),
                                              userIndicatorController: UserIndicatorControllerMock(),
-                                             userDiscoveryService: userDiscoveryService,
-                                             appSettings: appSettings)
+                                             userDiscoveryService: userDiscoveryService)
     }
     
     @Test

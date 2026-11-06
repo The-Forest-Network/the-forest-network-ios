@@ -51,20 +51,18 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<false/>
 	<key>NSCameraUsageDescription</key>
-	<string>To take pictures or videos and send them as a message $(APP_DISPLAY_NAME) needs access to the camera.</string>
+	<string>To take pictures or videos and send them as a message $(PRODUCTION_APP_NAME) needs access to the camera.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Face ID is used to access your app.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>To share your live location, $(APP_DISPLAY_NAME) needs location access when the app is in the background.</string>
+	<string>To share your location live in chats, location access is needed when the app is in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Grant location access so that $(APP_DISPLAY_NAME) can share your location.</string>
+	<string>Grant location access so that $(PRODUCTION_APP_NAME) can share your location.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>To record and send messages with audio, $(APP_DISPLAY_NAME) needs to access the microphone.</string>
+	<string>To record and send messages with audio, $(PRODUCTION_APP_NAME) needs to access the microphone.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This lets you save images and videos to your photo library.</string>
 	<key>NSUserActivityTypes</key>
@@ -82,8 +80,6 @@
 		<string>audio</string>
 		<string>fetch</string>
 		<string>processing</string>
-		<string>voip</string>
-		<string>location</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict>
@@ -122,6 +118,8 @@
 	<string>$(CLASSIC_APP_KEYCHAIN_ACCESS_GROUP_IDENTIFIER)</string>
 	<key>classicAppKeychainServiceIdentifier</key>
 	<string>$(CLASSIC_APP_KEYCHAIN_SERVICE_IDENTIFIER)</string>
+	<key>isNightlyBuild</key>
+	<string>$(IS_NIGHTLY_BUILD)</string>
 	<key>keychainAccessGroupIdentifier</key>
 	<string>$(KEYCHAIN_ACCESS_GROUP_IDENTIFIER)</string>
 	<key>productionAppName</key>

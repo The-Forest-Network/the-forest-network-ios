@@ -225,6 +225,7 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                 presentNotificationPermissionsScreen()
             case (_, _, .finished):
                 isNewLogin = false
+                appSettings.hasSignedInBefore = true
                 actionsSubject.send(.dismiss)
                 stateMachine.tryState(.initial)
             case (.finished, _, .initial):
@@ -302,7 +303,8 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
                                                                             userIndicatorController: userIndicatorController,
                                                                             isModallyPresented: false)
         
-        let coordinator = SecureBackupRecoveryKeyScreenCoordinator(parameters: parameters)
+        let coordinator = appHooks.recoveryKeyScreenHook.makeCoordinator(parameters: parameters,
+                                                                         homeserver: userSession.clientProxy.homeserver)
         
         coordinator.actions
             .sink { action in
@@ -347,7 +349,7 @@ class OnboardingFlowCoordinator: FlowCoordinatorProtocol {
     }
     
     private func presentIdentityConfirmedScreen() {
-        let coordinator = IdentityConfirmedScreenCoordinator(parameters: .init())
+        let coordinator = IdentityConfirmedScreenCoordinator()
         coordinator.actionsPublisher
             .sink { [weak self] action in
                 guard let self else { return }

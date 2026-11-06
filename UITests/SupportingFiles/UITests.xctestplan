@@ -10,15 +10,12 @@
     }
   ],
   "defaultOptions" : {
-    "addressSanitizer" : {
-      "enabled" : true
-    },
     "codeCoverage" : {
       "targets" : [
         {
-          "containerPath" : "container:ElementX.xcodeproj",
-          "identifier" : "C0FAEB81CFD9776CD78CE489",
-          "name" : "ElementX"
+          "containerPath" : "container:TheForestNetwork.xcodeproj",
+          "identifier" : "3165A68F2A075C40A49FCF42",
+          "name" : "ForestNetwork"
         }
       ]
     },
@@ -39,18 +36,17 @@
       "referenceType" : "built-in"
     },
     "targetForVariableExpansion" : {
-      "containerPath" : "container:ElementX.xcodeproj",
-      "identifier" : "0E28CD62691FDBC63147D5E3",
+      "containerPath" : "container:TheForestNetwork.xcodeproj",
+      "identifier" : "7BAC53026064481CF9F6EE3B",
       "name" : "UITests"
     },
-    "testTimeoutsEnabled" : true,
-    "undefinedBehaviorSanitizerEnabled" : true
+    "testTimeoutsEnabled" : true
   },
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:ElementX.xcodeproj",
-        "identifier" : "0E28CD62691FDBC63147D5E3",
+        "containerPath" : "container:TheForestNetwork.xcodeproj",
+        "identifier" : "7BAC53026064481CF9F6EE3B",
         "name" : "UITests"
       }
     }

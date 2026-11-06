@@ -26,6 +26,7 @@ enum AuthenticationStartScreenCoordinatorAction {
     
     case loginDirectlyWithOAuth(data: OAuthAuthorizationDataProxy, window: UIWindow)
     case loginDirectlyWithPassword(loginHint: String?)
+    case registerDirectlyWithOAuth(data: OAuthAuthorizationDataProxy, window: UIWindow)
     
     case reportProblem
     case developerOptions
@@ -69,6 +70,8 @@ final class AuthenticationStartScreenCoordinator: CoordinatorProtocol {
                     actionsSubject.send(.loginDirectlyWithOAuth(data: data, window: window))
                 case .loginDirectlyWithPassword(let loginHint):
                     actionsSubject.send(.loginDirectlyWithPassword(loginHint: loginHint))
+                case .registerDirectlyWithOAuth(let data, let window):
+                    actionsSubject.send(.registerDirectlyWithOAuth(data: data, window: window))
                     
                 case .reportProblem:
                     actionsSubject.send(.reportProblem)

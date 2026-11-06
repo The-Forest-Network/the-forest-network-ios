@@ -7,7 +7,7 @@
 //
 
 import Combine
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 
 @MainActor
@@ -26,7 +26,7 @@ struct SpaceAddRoomsScreenViewModelTests {
         
         let clientProxy = ClientProxyMock(.init())
         clientProxy.recentlyVisitedRoomsFilterReturnValue = .init(repeating: JoinedRoomProxyMock(.init()), count: 5)
-        spaceServiceProxy = clientProxy.underlyingSpaceService as? SpaceServiceProxyMock ?? SpaceServiceProxyMock(.init())
+        spaceServiceProxy = clientProxy.spaceService as? SpaceServiceProxyMock ?? SpaceServiceProxyMock(.init())
         
         viewModel = SpaceAddRoomsScreenViewModel(spaceRoomListProxy: spaceRoomListProxy,
                                                  userSession: UserSessionMock(.init(clientProxy: clientProxy)),

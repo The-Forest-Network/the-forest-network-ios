@@ -15,6 +15,7 @@ enum AuthenticationStartScreenViewModelAction: Equatable {
     
     case loginDirectlyWithOAuth(data: OAuthAuthorizationDataProxy, window: UIWindow)
     case loginDirectlyWithPassword(loginHint: String?)
+    case registerDirectlyWithOAuth(data: OAuthAuthorizationDataProxy, window: UIWindow)
     
     case reportProblem
     case developerOptions
@@ -27,6 +28,7 @@ struct AuthenticationStartScreenViewState: BindableState {
     let serverName: String?
     let showCreateAccountButton: Bool
     let showQRCodeLoginButton: Bool
+    let requestAccountMessage: AttributedString
     
     enum ClassicAppMode { case welcomeBack(ClassicAppAccount), otherOptions(ClassicAppAccount) }
     var classicAppMode: ClassicAppMode?
@@ -69,4 +71,5 @@ enum AuthenticationStartScreenViewAction {
     case otherOptions(ClassicAppAccount)
     case closeOtherOptions(ClassicAppAccount)
     case openClassicApp
+    case openRequestAccountURL(URL)
 }

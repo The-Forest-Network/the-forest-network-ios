@@ -80,6 +80,7 @@ struct AuthenticationStartScreen: View {
                         .font(.compound.headingLGBold)
                         .foregroundColor(.compound.textPrimary)
                         .multilineTextAlignment(.center)
+                        .accessibilityAddTraits(.isHeader)
                     Text(L10n.screenOnboardingWelcomeMessage)
                         .font(.compound.bodyLG)
                         .foregroundColor(.compound.textPrimary)
@@ -115,10 +116,16 @@ struct AuthenticationStartScreen: View {
             
             if context.viewState.showCreateAccountButton {
                 Button { context.send(viewAction: .register) } label: {
-                    Text(L10n.screenCreateAccountTitle)
+                    Text(UntranslatedL10n.screenOnboardingRegistrationButtonTitle)
                 }
                 .buttonStyle(.compound(.tertiary))
             }
+            
+            Text(context.viewState.requestAccountMessage)
+                .font(.compound.bodySM)
+                .foregroundColor(.compound.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.top, 8)
             
             versionText
                 .font(.compound.bodySM)
@@ -135,6 +142,10 @@ struct AuthenticationStartScreen: View {
         }
         .padding(.horizontal, verticalSizeClass == .compact ? 128 : 24)
         .readableFrame()
+        .environment(\.openURL, OpenURLAction { url in
+            context.send(viewAction: .openRequestAccountURL(url))
+            return .handled
+        })
     }
     
     var versionText: Text {

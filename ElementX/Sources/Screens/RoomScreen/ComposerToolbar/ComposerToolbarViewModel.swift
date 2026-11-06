@@ -35,7 +35,6 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
     }
     
     private struct WysiwygLinkData {
-        let action: LinkAction
         let range: NSRange
         var url: String
         var text: String
@@ -65,10 +64,8 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
         attributedStringBuilder = AttributedStringBuilder(cacheKey: "Composer", mentionBuilder: mentionBuilder)
         
         super.init(initialViewState: ComposerToolbarViewState(wysiwygViewModel: wysiwygViewModel,
-                                                              audioPlayerState: .init(id: .recorderPreview, title: L10n.commonVoiceMessage, duration: 0),
-                                                              audioRecorderState: .init(),
                                                               isRoomEncrypted: roomProxy.infoPublisher.value.isEncrypted,
-                                                              isLocationSharingEnabled: appSettings.mapTilerSettings.publisher.value.isEnabled,
+                                                              isLocationSharingEnabled: appSettings.mapTilerConfiguration.publisher.value.isEnabled,
                                                               bindings: .init()),
                    mediaProvider: mediaProvider)
         
@@ -192,6 +189,8 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
             switch state.composerMode {
             case .previewVoiceMessage:
                 actionsSubject.send(.voiceMessage(.send))
+            case .recordVoiceMessage:
+                MXLog.warning("Ignoring send action while recording a voice message.")
             default:
                 if context.composerFormattingEnabled {
                     actionsSubject.send(.sendMessage(plain: wysiwygViewModel.content.markdown,
@@ -580,10 +579,8 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
         switch mode {
         case .default:
             break
-        case .recordVoiceMessage(let audioRecorderState):
-            state.audioRecorderState = audioRecorderState
-        case .previewVoiceMessage(let audioPlayerState, _, _):
-            state.audioPlayerState = audioPlayerState
+        case .recordVoiceMessage, .previewVoiceMessage:
+            break
         case .edit, .reply:
             // Focus composer when switching to reply/edit
             state.bindings.composerFocused = true
@@ -645,8 +642,7 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
     
     private func createLinkAlert() {
         let linkAction = wysiwygViewModel.getLinkAction()
-        currentLinkData = WysiwygLinkData(action: linkAction,
-                                          range: wysiwygViewModel.attributedContent.selection,
+        currentLinkData = WysiwygLinkData(range: wysiwygViewModel.attributedContent.selection,
                                           url: linkAction.url ?? "",
                                           text: "")
         

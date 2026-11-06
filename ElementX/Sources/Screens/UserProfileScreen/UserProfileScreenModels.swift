@@ -19,11 +19,13 @@ struct UserProfileScreenViewState: BindableState {
     let isOwnUser: Bool
     let isPresentedModally: Bool
     
-    var userProfile: UserProfileProxy?
+    var userProfile: UserProfile?
     var isIdentityKnown = false
     var isVerified: Bool?
     var permalink: URL?
     var dmRoomID: String?
+    // Hidden until the server has a MatrixRTC backend (LiveKit) to connect calls.
+    var isCallingEnabled = false
     
     var bindings: UserProfileScreenViewStateBindings
     

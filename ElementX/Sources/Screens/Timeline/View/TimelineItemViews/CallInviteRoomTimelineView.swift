@@ -11,11 +11,9 @@ import Foundation
 import SwiftUI
 
 struct CallInviteRoomTimelineView: View {
-    let timelineItem: CallInviteRoomTimelineItem
-    
     var body: some View {
         Label {
-            Text(L10n.screenRoomTimelineLegacyCall)
+            Text(UntranslatedL10n.screenRoomTimelineLegacyCallIos(InfoPlistReader.main.productionAppName))
         } icon: {
             CompoundIcon(\.voiceCallSolid, size: .medium, relativeTo: .compound.bodyMD)
         }
@@ -34,10 +32,6 @@ struct CallInviteRoomTimelineView_Previews: PreviewProvider, TestablePreview {
     }
     
     static var body: some View {
-        CallInviteRoomTimelineView(timelineItem: .init(id: .randomEvent,
-                                                       timestamp: .mock,
-                                                       isEditable: false,
-                                                       canBeRepliedTo: false,
-                                                       sender: .init(id: "Bob")))
+        CallInviteRoomTimelineView()
     }
 }

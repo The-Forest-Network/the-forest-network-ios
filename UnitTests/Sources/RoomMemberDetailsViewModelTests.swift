@@ -6,12 +6,11 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 
 @MainActor
 struct RoomMemberDetailsViewModelTests {
-    var clientProxy: ClientProxy!
     var viewModel: RoomMemberDetailsScreenViewModelProtocol!
     var roomProxyMock: JoinedRoomProxyMock!
     var roomMemberProxyMock: RoomMemberProxyMock!
@@ -211,8 +210,8 @@ struct RoomMemberDetailsViewModelTests {
         viewModel = RoomMemberDetailsScreenViewModel(userID: roomMemberProxyMock.userID,
                                                      roomProxy: roomProxyMock,
                                                      userSession: userSession,
-                                                     userIndicatorController: UserIndicatorControllerMock(),
+                                                     appHooks: AppHooks(),
                                                      analytics: AnalyticsServiceMock(.init()),
-                                                     appSettings: .volatile())
+                                                     userIndicatorController: UserIndicatorControllerMock())
     }
 }

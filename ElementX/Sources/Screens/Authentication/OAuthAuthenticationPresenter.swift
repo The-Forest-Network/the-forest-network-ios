@@ -13,7 +13,6 @@ import AuthenticationServices
 /// In certain instances the URL may require opening an external app instead of using a WAS. Because of this
 /// it is recommended to not encode the OAuth authentication within any state machines, as there is no guarantee
 /// that any cancellations/failures will be communicated upwards.
-@MainActor
 class OAuthAuthenticationPresenter: NSObject {
     private let authenticationService: AuthenticationServiceProtocol
     private let redirectURL: URL
@@ -56,7 +55,11 @@ class OAuthAuthenticationPresenter: NSObject {
     /// **Note:** The failure case cannot be relied upon as a signal that the authentication has ended.
     /// In particular if the authentication URL requires opening an external app, then the user may return
     /// to the app without completing (or cancelling) the authentication.
-    func authenticate(using oAuthData: OAuthAuthorizationDataProxy) async -> Result<UserSessionProtocol, AuthenticationServiceError> {
+    /// - Parameter useEphemeralSession: Presents the session with no access to existing cookies/session state, and
+    /// doesn't persist anything from this session either. Used for registration so that a `.create` prompt can't
+    /// land the user in an existing cached MAS session instead of the sign-up form (there's never a cached session
+    /// to land in) — see element-hq/matrix-authentication-service#3429.
+    func authenticate(using oAuthData: OAuthAuthorizationDataProxy, useEphemeralSession: Bool = false) async -> Result<UserSessionProtocol, AuthenticationServiceError> {
         let authenticationURL = appHooks.oAuthPresenterHook.update(oAuthData.url)
         
         let response = await withCheckedContinuation { continuation in
@@ -65,7 +68,7 @@ class OAuthAuthenticationPresenter: NSObject {
                 continuation.resume(returning: Response(url: url, isExternal: false, error: error))
             }
             
-            session.prefersEphemeralWebBrowserSession = false
+            session.prefersEphemeralWebBrowserSession = useEphemeralSession
             session.presentationContextProvider = self
             session.additionalHeaderFields = [
                 "X-Element-User-Agent": UserAgentBuilder.makeASCIIUserAgent()

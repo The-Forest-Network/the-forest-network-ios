@@ -10,18 +10,16 @@ import Foundation
 import UIKit
 
 // sourcery: AutoMockable
-@MainActor
 protocol AppMediatorProtocol {
     var windowManager: WindowManagerProtocol { get }
     var networkMonitor: NetworkMonitorProtocol { get }
     
     var appState: UIApplication.State { get }
     
-    func beginBackgroundTask(expirationHandler handler: (() -> Void)?) -> UIBackgroundTaskIdentifier
-    
-    func endBackgroundTask(_ identifier: UIBackgroundTaskIdentifier)
-    
     func open(_ url: URL)
+    
+    /// Presents the given URL in an in-app Safari view controller, rather than switching to the Safari app.
+    func presentSafariViewController(with url: URL)
     
     func openAppSettings()
     

@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 
 @MainActor
@@ -20,8 +20,8 @@ final class AppLockSetupBiometricsScreenViewModelTests {
     
     init() {
         appLockService = AppLockServiceMock()
-        appLockService.underlyingIsEnabled = true
-        appLockService.underlyingBiometryType = .touchID
+        appLockService.isEnabled = true
+        appLockService.biometryType = .touchID
         appLockService.enableBiometricUnlockReturnValue = .success(())
         viewModel = AppLockSetupBiometricsScreenViewModel(appLockService: appLockService)
     }

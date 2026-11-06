@@ -11,7 +11,7 @@ import SFSafeSymbols
 import SwiftUI
 
 struct SettingsScreen: View {
-    let context: SettingsScreenViewModel.Context
+    @Bindable var context: SettingsScreenViewModel.Context
     
     private var shouldHideManageAccountSection: Bool {
         context.viewState.accountProfileURL == nil &&
@@ -22,6 +22,10 @@ struct SettingsScreen: View {
     var body: some View {
         Form {
             userSection
+            
+            if context.viewState.showUserStatusInput {
+                userStatusSection
+            }
             
             if !shouldHideManageAccountSection {
                 manageAccountSection
@@ -42,6 +46,13 @@ struct SettingsScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarVisibility(context.viewState.navigationBarVisibility, for: .navigationBar)
         .toolbar { toolbar }
+        .sheet(isPresented: $context.isPresentingStatusPicker) {
+            SettingsScreenUserStatusPickerView { action in
+                context.send(viewAction: .userStatus(action))
+            }
+            .presentationDetents([.medium])
+            .presentationBackground(.compound.bgCanvasDefault)
+        }
     }
     
     private var userSection: some View {
@@ -51,18 +62,25 @@ struct SettingsScreen: View {
                     context.send(viewAction: .userDetails)
                 } label: {
                     HStack(spacing: 12) {
-                        LoadableAvatarImage(url: context.viewState.userAvatarURL,
-                                            name: context.viewState.userDisplayName,
-                                            contentID: context.viewState.userID,
+                        LoadableAvatarImage(url: context.viewState.userProfile.avatarURL,
+                                            name: context.viewState.userProfile.displayName,
+                                            contentID: context.viewState.userProfile.id,
                                             avatarSize: .user(on: .settings),
                                             mediaProvider: context.mediaProvider)
                             .accessibilityHidden(true)
                         
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(context.viewState.userDisplayName ?? "")
-                                .font(.compound.headingMD)
-                                .foregroundColor(.compound.textPrimary)
-                            Text(context.viewState.userID)
+                            HStack(spacing: 6) {
+                                Text(context.viewState.userProfile.displayName ?? "")
+                                
+                                if let statusEmoji = context.viewState.userProfile.status.displayed?.emoji {
+                                    Text(String(statusEmoji))
+                                }
+                            }
+                            .font(.compound.headingMD)
+                            .foregroundColor(.compound.textPrimary)
+                            
+                            Text(context.viewState.userProfile.id)
                                 .font(.compound.bodySM)
                                 .foregroundColor(.compound.textSecondary)
                         }
@@ -75,6 +93,14 @@ struct SettingsScreen: View {
                     .padding(.vertical, 8)
                 }
             })
+        }
+    }
+    
+    private var userStatusSection: some View {
+        Section {
+            SettingsScreenUserStatusRow(mode: context.viewState.userStatusRowMode) { action in
+                context.send(viewAction: .userStatus(action))
+            }
         }
     }
     
@@ -255,6 +281,7 @@ struct SettingsScreen: View {
 
 // MARK: - Previews
 
+@available(iOS 26.0, *)
 struct SettingsScreen_Previews: PreviewProvider, TestablePreview {
     static let viewModel = makeViewModel()
     static let bugReportDisabledViewModel = makeViewModel(isBugReportServiceEnabled: false)
@@ -264,21 +291,28 @@ struct SettingsScreen_Previews: PreviewProvider, TestablePreview {
             SettingsScreen(context: viewModel.context)
         }
         .snapshotPreferences(expect: viewModel.context.observe(\.viewState.accountProfileURL).map { $0 != nil })
+        .frame(height: 1100)
+        .previewLayout(.sizeThatFits)
         .previewDisplayName("Default")
         
         ElementNavigationStack {
             SettingsScreen(context: bugReportDisabledViewModel.context)
         }
         .snapshotPreferences(expect: bugReportDisabledViewModel.context.observe(\.viewState.accountProfileURL).map { $0 != nil })
+        .frame(height: 1050)
+        .previewLayout(.sizeThatFits)
         .previewDisplayName("Bug report disabled")
     }
     
     static func makeViewModel(isBugReportServiceEnabled: Bool = true) -> SettingsScreenViewModel {
-        let userSession = UserSessionMock(.init(clientProxy: ClientProxyMock(.init(userID: "@userid:example.com",
-                                                                                   deviceID: "AAAAAAAAAAA"))))
+        let userSession = UserSessionMock(.init(clientProxy: ClientProxyMock(.init(userID: "@alice:example.com",
+                                                                                   deviceID: "AAAAAAAAAAA",
+                                                                                   displayName: "Alice Liddell",
+                                                                                   status: .mockFocussing))))
         return SettingsScreenViewModel(userSession: userSession,
                                        appSettings: .volatile(),
                                        isBugReportServiceEnabled: isBugReportServiceEnabled,
-                                       isInSecondaryWindow: false)
+                                       isInSecondaryWindow: false,
+                                       userIndicatorController: UserIndicatorControllerMock())
     }
 }

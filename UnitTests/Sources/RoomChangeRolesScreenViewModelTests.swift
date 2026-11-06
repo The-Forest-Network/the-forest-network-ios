@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 
 @MainActor
@@ -41,7 +41,7 @@ struct RoomChangeRolesScreenViewModelTests {
         #expect(context.viewState.moderators == context.viewState.visibleModerators)
         #expect(context.viewState.users == context.viewState.visibleUsers)
         #expect(context.viewState.membersWithRole.count == 3)
-        #expect(context.viewState.membersWithRole.first { $0.id == RoomMemberProxyMock.mockModerator.userID } != nil)
+        #expect(context.viewState.membersWithRole.contains { $0.id == RoomMemberProxyMock.mockModerator.userID })
         #expect(!context.viewState.hasChanges)
         #expect(!context.viewState.isSearching)
     }

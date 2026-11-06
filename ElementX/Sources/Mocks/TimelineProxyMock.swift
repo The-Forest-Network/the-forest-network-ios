@@ -9,6 +9,7 @@
 import Combine
 import Foundation
 import MatrixRustSDK
+import MatrixRustSDKMocks
 
 extension TimelineProxyMock {
     struct Configuration {
@@ -24,22 +25,22 @@ extension TimelineProxyMock {
         sendMessageEventContentReturnValue = .success(())
         sendMessageHtmlInReplyToEventIDIntentionalMentionsReturnValue = .success(())
         editNewContentReturnValue = .success(())
-        buildMessageContentForHtmlIntentionalMentionsReturnValue = RoomMessageEventContentWithoutRelation(noHandle: .init())
+        buildMessageContentForHtmlIntentionalMentionsReturnValue = RoomMessageEventContentWithoutRelationSDKMock()
         paginateBackwardsRequestSizeReturnValue = .success(())
         paginateForwardsRequestSizeReturnValue = .success(())
         sendReadReceiptForTypeReturnValue = .success(())
-        createPollQuestionAnswersPollKindReturnValue = .success(())
-        editPollOriginalQuestionAnswersPollKindReturnValue = .success(())
+        createPollQuestionAnswersMaxSelectionsPollKindReturnValue = .success(())
+        editPollOriginalQuestionAnswersMaxSelectionsPollKindReturnValue = .success(())
         
         if let provider = configuration.timelineItemProvider {
-            underlyingTimelineItemProvider = provider
+            timelineItemProvider = provider
         } else if configuration.isAutoUpdating {
-            underlyingTimelineItemProvider = AutoUpdatingTimelineItemProviderMock()
+            timelineItemProvider = AutoUpdatingTimelineItemProviderMock()
         } else {
-            let timelineItemProvider = TimelineItemProviderMock()
-            timelineItemProvider.paginationState = .init(backward: configuration.timelineStartReached ? .endReached : .idle, forward: .endReached)
-            timelineItemProvider.underlyingMembershipChangePublisher = PassthroughSubject().eraseToAnyPublisher()
-            underlyingTimelineItemProvider = timelineItemProvider
+            let provider = TimelineItemProviderMock()
+            provider.paginationState = .init(backward: configuration.timelineStartReached ? .endReached : .idle, forward: .endReached)
+            provider.membershipChangePublisher = PassthroughSubject().eraseToAnyPublisher()
+            timelineItemProvider = provider
         }
     }
 }

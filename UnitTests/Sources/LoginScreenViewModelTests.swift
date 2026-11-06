@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 
 @MainActor
@@ -246,7 +246,6 @@ struct LoginScreenViewModelTests {
         viewModel = LoginScreenViewModel(authenticationService: service,
                                          loginHint: loginHint,
                                          userIndicatorController: UserIndicatorControllerMock(),
-                                         appSettings: appSettings,
-                                         analytics: AnalyticsServiceMock(.init()))
+                                         appSettings: appSettings)
     }
 }

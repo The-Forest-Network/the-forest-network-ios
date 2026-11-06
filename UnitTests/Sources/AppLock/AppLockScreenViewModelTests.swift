@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import Testing
 
 @MainActor
@@ -41,6 +41,19 @@ final class AppLockScreenViewModelTests {
         
         // The app should become unlocked.
         #expect(result == .appUnlocked)
+    }
+    
+    @Test
+    func cancelVerifyDeviceOwner() async throws {
+        // Given a screen shown to verify the device owner.
+        viewModel = AppLockScreenViewModel(appLockService: appLockService, mode: .verifyDeviceOwner)
+        
+        // When the user cancels.
+        let deferred = deferFulfillment(viewModel.actions) { $0 == .cancelVerifyDeviceOwner }
+        viewModel.context.send(viewAction: .cancelVerifyDeviceOwner)
+        
+        // Then the cancellation should be reported.
+        try await deferred.fulfill()
     }
     
     @Test

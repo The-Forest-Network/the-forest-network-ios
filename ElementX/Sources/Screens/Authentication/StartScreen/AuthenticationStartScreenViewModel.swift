@@ -15,7 +15,6 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
     private let authenticationService: AuthenticationServiceProtocol
     private let provisioningParameters: AccountProvisioningParameters?
     private let appMediator: AppMediatorProtocol
-    private let appSettings: AppSettings
     private let userIndicatorController: UserIndicatorControllerProtocol
     
     private let canReportProblem: Bool
@@ -37,20 +36,22 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
         self.authenticationService = authenticationService
         self.provisioningParameters = provisioningParameters
         self.appMediator = appMediator
-        self.appSettings = appSettings
         self.userIndicatorController = userIndicatorController
         canReportProblem = isBugReportServiceEnabled
         
         let isQRCodeScanningSupported = !ProcessInfo.processInfo.isiOSAppOnMac
         let classicAppAccountProvider = authenticationService.classicAppAccount?.serverName
         let isClassicAppAccountAllowed = classicAppAccountProvider.map { appSettings.accountProviders.contains($0) } ?? false
+        let requestAccountMessage = Self.makeRequestAccountMessage(url: appSettings.requestAccountURL)
         
         let initialViewState = if !appSettings.allowOtherAccountProviders {
-            // We don't show the create account button when custom providers are disallowed.
-            // The assumption here being that if you're running a custom app, your users will already be created.
+            // Custom providers are disallowed, but the locked-in provider(s) may still support
+            // self-service registration (e.g. via a MAS-hosted sign-up page), so the create
+            // account button's visibility still follows `showCreateAccountButton`.
             AuthenticationStartScreenViewState(serverName: appSettings.accountProviders.count == 1 ? appSettings.accountProviders[0] : nil,
-                                               showCreateAccountButton: false,
+                                               showCreateAccountButton: appSettings.showCreateAccountButton,
                                                showQRCodeLoginButton: isQRCodeScanningSupported,
+                                               requestAccountMessage: requestAccountMessage,
                                                classicAppMode: isClassicAppAccountAllowed ? authenticationService.classicAppAccount.map { .welcomeBack($0) } : nil,
                                                hideBrandChrome: appSettings.hideBrandChrome)
         } else if let provisioningParameters {
@@ -58,6 +59,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
             AuthenticationStartScreenViewState(serverName: provisioningParameters.accountProvider,
                                                showCreateAccountButton: false,
                                                showQRCodeLoginButton: false,
+                                               requestAccountMessage: requestAccountMessage,
                                                classicAppMode: nil,
                                                hideBrandChrome: appSettings.hideBrandChrome)
         } else {
@@ -65,6 +67,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
             AuthenticationStartScreenViewState(serverName: nil,
                                                showCreateAccountButton: appSettings.showCreateAccountButton,
                                                showQRCodeLoginButton: isQRCodeScanningSupported,
+                                               requestAccountMessage: requestAccountMessage,
                                                classicAppMode: authenticationService.classicAppAccount.map { .welcomeBack($0) },
                                                hideBrandChrome: appSettings.hideBrandChrome)
         }
@@ -95,7 +98,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
         case .login:
             Task { await login() }
         case .register:
-            actionsSubject.send(.register)
+            Task { await register() }
             
         case .continueWithClassic(let account):
             Task { await login(classicAppAccount: account) }
@@ -106,10 +109,22 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
         case .openClassicApp:
             guard let classicAppDeepLinkURL = InfoPlistReader.main.classicAppDeepLinkURL else { return }
             appMediator.open(classicAppDeepLinkURL)
+        case .openRequestAccountURL(let url):
+            appMediator.presentSafariViewController(with: url)
         }
     }
     
     // MARK: - Private
+    
+    private static func makeRequestAccountMessage(url: URL) -> AttributedString {
+        let linkPlaceholder = "{link}"
+        var message = AttributedString(UntranslatedL10n.screenOnboardingRequestAccountMessage(linkPlaceholder))
+        var link = AttributedString(UntranslatedL10n.screenOnboardingRequestAccountContentLink)
+        link.link = url
+        link.bold()
+        message.replace(linkPlaceholder, with: link)
+        return message
+    }
     
     private func login(classicAppAccount: ClassicAppAccount? = nil) async {
         if let classicAppAccount {
@@ -124,6 +139,36 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
             await configureAccountProvider(serverName, loginHint: provisioningParameters?.loginHint)
         } else {
             actionsSubject.send(.login) // No need to configure anything here, continue the flow.
+        }
+    }
+    
+    /// Starts the registration flow. When the app is locked to a known provider we skip straight to MAS's sign-up
+    /// page (rather than showing a "choose an account provider" confirmation for a provider that isn't a choice),
+    /// since the registration token entered there is what actually gates account creation.
+    private func register() async {
+        guard let serverName = state.serverName else {
+            actionsSubject.send(.register) // No locked provider, continue via the server selection screen.
+            return
+        }
+        
+        startLoading()
+        defer { stopLoading() }
+        
+        guard case .success = await authenticationService.configure(for: serverName, flow: .register) else {
+            displayError()
+            return
+        }
+        
+        guard let window = state.window else {
+            displayError()
+            return
+        }
+        
+        switch await authenticationService.urlForOAuthLogin(loginHint: nil) {
+        case .success(let oAuthData):
+            actionsSubject.send(.registerDirectlyWithOAuth(data: oAuthData, window: window))
+        case .failure:
+            displayError()
         }
     }
     

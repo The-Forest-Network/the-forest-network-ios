@@ -9,7 +9,7 @@
 import Foundation
 
 /// The supported forms of login that a homeserver allows.
-enum LoginMode: Equatable {
+nonisolated enum LoginMode: Equatable {
     /// The login mode hasn't been determined yet.
     case unknown
     /// The homeserver supports login via OpenID Connect.
@@ -23,6 +23,14 @@ enum LoginMode: Equatable {
         switch self {
         case .oAuth: true
         default: false
+        }
+    }
+    
+    var supportsCreatePrompt: Bool {
+        if case .oAuth(let supportsCreatePrompt) = self {
+            supportsCreatePrompt
+        } else {
+            false
         }
     }
 }

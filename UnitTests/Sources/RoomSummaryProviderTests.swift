@@ -6,7 +6,7 @@
 // Please see LICENSE files in the repository root for full details.
 //
 
-@testable import ElementX
+@testable import ForestNetwork
 import MatrixRustSDK
 import MatrixRustSDKMocks
 import Testing
@@ -112,7 +112,7 @@ final class RoomSummaryProviderTests {
         dynamicAdaptersResult.controllerReturnValue = dynamicEntriesController
         roomList = RoomListSDKMock()
         roomList.entriesWithDynamicAdaptersPageSizeListenerReturnValue = dynamicAdaptersResult
-        roomList.loadingStateListenerReturnValue = .some(.init(state: .notLoaded, stateStream: .init(noHandle: .init())))
+        roomList.loadingStateListenerReturnValue = .some(.init(state: .notLoaded, stateStream: TaskHandleSDKMock()))
         roomSummaryProvider.setRoomList(roomList)
     }
 }

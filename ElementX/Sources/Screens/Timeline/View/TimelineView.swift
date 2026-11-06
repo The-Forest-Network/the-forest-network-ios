@@ -34,7 +34,6 @@ struct TimelineView: View {
                                                              canCurrentUserRedactOthers: timelineContext.viewState.canCurrentUserRedactOthers,
                                                              canCurrentUserPin: timelineContext.viewState.canCurrentUserPin,
                                                              pinnedEventIDs: timelineContext.viewState.pinnedEventIDs,
-                                                             isDM: timelineContext.viewState.isDM,
                                                              isViewSourceEnabled: timelineContext.viewState.isViewSourceEnabled,
                                                              areThreadsEnabled: timelineContext.viewState.areThreadsEnabled,
                                                              timelineKind: timelineContext.viewState.timelineKind,
@@ -101,7 +100,6 @@ struct TimelineViewRepresentable: UIViewControllerRepresentable {
     
     // MARK: - Coordinator
     
-    @MainActor
     class Coordinator {
         let context: TimelineViewModel.Context
         
@@ -156,7 +154,7 @@ struct TimelineView_Previews: PreviewProvider { // Not testable as this preview 
         let appSettings = AppSettings.volatile()
         
         return TimelineViewModel(roomProxy: roomProxyMock,
-                                 timelineController: MockTimelineController(),
+                                 timelineController: TimelineControllerMock(.init()),
                                  userSession: UserSessionMock(.init()),
                                  mediaPlayerProvider: MediaPlayerProviderMock(),
                                  userIndicatorController: UserIndicatorControllerMock(),

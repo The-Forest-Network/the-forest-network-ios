@@ -7,19 +7,20 @@
 //
 
 import AnalyticsEvents
-@testable import ElementX
+@testable import ForestNetwork
 import PostHog
 import Testing
 
+@MainActor
 final class AnalyticsTests {
     private let appSettings: AppSettings
     private let analytics: AnalyticsServiceProtocol
     private let analyticsClient: AnalyticsClientMock
     private var posthogMock: PHGPostHogMock
     
-    @MainActor
     init() {
         appSettings = AppSettings.volatile()
+        appSettings.overrideAnalyticsConfiguration(AnalyticsConfiguration(host: "https://posthog.example.com", apiKey: "test_key"))
         
         analyticsClient = AnalyticsClientMock()
         analyticsClient.isRunning = false

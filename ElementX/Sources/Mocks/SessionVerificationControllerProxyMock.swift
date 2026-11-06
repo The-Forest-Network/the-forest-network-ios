@@ -22,12 +22,12 @@ extension SessionVerificationControllerProxyMock {
                               otherDeviceStartsSasVerification: Bool = false,
                               requestDelay: Duration = .seconds(1)) -> SessionVerificationControllerProxyMock {
         let mock = SessionVerificationControllerProxyMock()
-        mock.underlyingActions = actions
+        mock.actions = actions
         
         mock.acknowledgeVerificationRequestDetailsReturnValue = .success(())
         
         mock.requestDeviceVerificationClosure = { [weak mock] in
-            Task.detached {
+            Task {
                 guard let mock else { return }
                 
                 try await Task.sleep(for: requestDelay)
@@ -46,13 +46,13 @@ extension SessionVerificationControllerProxyMock {
         }
         
         mock.startSasVerificationClosure = { [weak mock] in
-            Task.detached {
+            Task {
                 guard let mock else { return }
                 
                 try await Task.sleep(for: requestDelay)
                 mock.actions.send(.startedSasVerification)
                 
-                Task.detached {
+                Task {
                     try await Task.sleep(for: requestDelay)
                     mock.actions.send(.receivedVerificationData(emojis))
                 }
@@ -62,7 +62,7 @@ extension SessionVerificationControllerProxyMock {
         }
         
         mock.approveVerificationClosure = { [weak mock] in
-            Task.detached {
+            Task {
                 guard let mock else { return }
                 
                 try await Task.sleep(for: requestDelay)
@@ -73,7 +73,7 @@ extension SessionVerificationControllerProxyMock {
         }
         
         mock.declineVerificationClosure = { [weak mock] in
-            Task.detached {
+            Task {
                 guard let mock else { return }
                 
                 try await Task.sleep(for: requestDelay)
@@ -84,7 +84,7 @@ extension SessionVerificationControllerProxyMock {
         }
         
         mock.cancelVerificationClosure = { [weak mock] in
-            Task.detached {
+            Task {
                 guard let mock else { return }
                 
                 try await Task.sleep(for: requestDelay)

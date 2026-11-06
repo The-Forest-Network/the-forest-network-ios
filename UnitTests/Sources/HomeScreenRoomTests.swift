@@ -7,7 +7,8 @@
 //
 
 import Combine
-@testable import ElementX
+@testable import ForestNetwork
+import MatrixRustSDKMocks
 import Testing
 
 @MainActor
@@ -21,7 +22,7 @@ struct HomeScreenRoomTests {
                                    notificationMode: RoomNotificationModeProxy,
                                    hasOngoingCall: Bool,
                                    activeCallIntent: CallIntent? = nil) {
-        roomSummary = RoomSummary(room: .init(noHandle: .init()),
+        roomSummary = RoomSummary(room: RoomSDKMock(),
                                   id: "Test room",
                                   joinRequestType: nil,
                                   name: "Test room",

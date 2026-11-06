@@ -4,7 +4,9 @@ on:
   pull_request:
     types: [labeled, synchronize, opened, reopened]
 
-permissions: {}
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   build:
@@ -18,11 +20,11 @@ jobs:
       cancel-in-progress: true
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Danger
-        uses: danger/swift@434d7c25f3b02d490a340b23f5e78dd15a5670bc # 3.22.1
+        uses: danger/swift@53887414329bbf7deecde31f7d1d20bb15e6c4d3 # main, post-3.22.1: installs Node 24 (fixes undici v7 "File is not defined" crash on the Node 18 in 3.22.1)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

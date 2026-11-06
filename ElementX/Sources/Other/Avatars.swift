@@ -29,11 +29,11 @@ enum Avatars {
         }
         
         /// Value in pixels by using the scale of the main screen
-        var scaledValue: CGFloat {
+        @MainActor var scaledValue: CGFloat {
             value * UIScreen.main.scale
         }
         
-        var scaledSize: CGSize {
+        @MainActor var scaledSize: CGSize {
             CGSize(width: scaledValue, height: scaledValue)
         }
     }
@@ -61,7 +61,9 @@ enum Avatars {
 
 enum UserAvatarSizeOnScreen {
     case chats
+    case chatsCompact
     case spaces
+    case spacesCompact
     case timeline
     case settings
     case roomDetails
@@ -87,6 +89,7 @@ enum UserAvatarSizeOnScreen {
     case threadSummary
     case map
     case classicAppAccount
+    case search
     
     var value: CGFloat {
         switch self {
@@ -98,16 +101,18 @@ enum UserAvatarSizeOnScreen {
             24
         case .knockingUsersBannerStack:
             28
-        case .chats, .spaces, .map,
+        case .chatsCompact, .spacesCompact, .map,
              .timeline, .readReceiptSheet, .completionSuggestions,
              .blockedUsers, .roomMembersList, .knockingUserBanner:
             32
         case .startChat:
             36
+        case .chats, .spaces:
+            40
         case .roomDetails:
             44
         case .inviteUsers, .knockingUserList, .sessionVerification,
-             .settings, .threadList, .mediaPreviewDetails:
+             .settings, .threadList, .mediaPreviewDetails, .search:
             52
         case .roomChangeRoles:
             56
@@ -130,7 +135,7 @@ enum RoomAvatarSizeOnScreen {
     case timeline
     case leaveSpace
     case messageForwarding
-    case globalSearch
+    case search
     case roomSelection
     case details
     case editRoomDetails
@@ -146,17 +151,15 @@ enum RoomAvatarSizeOnScreen {
     
     var value: CGFloat {
         switch self {
-        case .notificationSettings:
-            30
-        case .timeline, .leaveSpace, .roomDirectorySearch,
+        case .timeline, .leaveSpace, .notificationSettings, .roomDirectorySearch,
              .completionSuggestions, .authorizedSpaces, .createRoomSelectSpace,
              .spaceFilters:
             32
-        case .messageForwarding, .globalSearch, .roomSelection,
+        case .messageForwarding, .roomSelection,
              .spaceAddRooms:
             36
         case .chats, .spaces, .spaceSettings,
-             .spaceAddRoomsSelected:
+             .spaceAddRoomsSelected, .search:
             52
         case .joinRoom, .spaceHeader, .editSpaceDetails:
             64

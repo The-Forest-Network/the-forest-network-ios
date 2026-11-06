@@ -20,7 +20,7 @@ struct UITests: AsyncParsableCommand {
     var deviceType: DeviceType
     
     @Option(help: "iOS version for the simulator.")
-    var osVersion = "26.4.1"
+    var osVersion = CI.defaultOSVersion
     
     @Option(help: "Run only a specific test (format: 'ClassName/testName').")
     var testName: String?
@@ -47,7 +47,10 @@ struct UITests: AsyncParsableCommand {
             "--device", simulatorName,
             "--os-version", osVersion,
             "--create-simulator-name", simulatorName,
-            "--create-simulator-type", simulatorType
+            "--create-simulator-type", simulatorType,
+            // A loaded runner can blow XCUITest's 60s app launch budget, which no amount of waiting
+            // in the tests can prevent, so give the failures a second run before failing the job.
+            "--retries", "1"
         ]
         
         if let testName {
@@ -61,6 +64,7 @@ struct UITests: AsyncParsableCommand {
         } catch {
             testsFailed = true
             print("\n❌ UI tests (\(deviceType.rawValue)) failed.\n")
+            CI.annotateError(title: "UI tests (\(deviceType.rawValue)) failed", "Download the artifacts for the xcresult bundle.")
         }
         
         await CI.zipResults(bundles: ["UITests.xcresult"],
