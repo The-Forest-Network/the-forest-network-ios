@@ -16,11 +16,22 @@ struct AuthenticationStartScreen: View {
     @Bindable var context: AuthenticationStartScreenViewModel.Context
     
     var body: some View {
-        if case let .welcomeBack(classicAppAccount) = context.viewState.classicAppMode,
-           classicAppAccount.state.isServerSupported != false {
-            AuthenticationClassicAppAccountView(context: context, classicAppAccount: classicAppAccount)
-        } else {
-            standardContent
+        Group {
+            if case let .welcomeBack(classicAppAccount) = context.viewState.classicAppMode,
+               classicAppAccount.state.isServerSupported != false {
+                AuthenticationClassicAppAccountView(context: context, classicAppAccount: classicAppAccount)
+            } else {
+                standardContent
+            }
+        }
+        .sheet(isPresented: $context.showTerms) {
+            if let supportURL = context.viewState.supportURL {
+                TermsAgreementScreen(supportEmailAddress: context.viewState.supportEmailAddress,
+                                     supportURL: supportURL,
+                                     onAgree: { context.send(viewAction: .agreeToTerms) },
+                                     onDecline: { context.send(viewAction: .declineTerms) })
+                    .interactiveDismissDisabled()
+            }
         }
     }
     

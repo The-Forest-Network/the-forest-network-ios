@@ -755,6 +755,10 @@ extension AccessibilityTests {
         try await performAccessibilityAudit(named: "SwipeRightAction_Previews")
     }
 
+    func testTermsAgreementScreen() async throws {
+        try await performAccessibilityAudit(named: "TermsAgreementScreen_Previews")
+    }
+
     func testTextRoomTimelineView() async throws {
         try await performAccessibilityAudit(named: "TextRoomTimelineView_Previews")
     }

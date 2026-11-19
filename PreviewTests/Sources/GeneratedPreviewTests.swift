@@ -1321,6 +1321,13 @@ extension PreviewTests {
     }
 
     @Test
+    func termsAgreementScreen() async throws {
+        for (index, preview) in TermsAgreementScreen_Previews._allPreviews.enumerated() {
+            try await assertSnapshots(matching: preview, step: index)
+        }
+    }
+
+    @Test
     func textRoomTimelineView() async throws {
         for (index, preview) in TextRoomTimelineView_Previews._allPreviews.enumerated() {
             try await assertSnapshots(matching: preview, step: index)

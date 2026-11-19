@@ -22,6 +22,8 @@ struct LegalInformationScreen: View {
                         kind: .button { openURL(context.viewState.acceptableUseURL) })
                 ListRow(label: .plain(title: L10n.commonPrivacyPolicy),
                         kind: .button { openURL(context.viewState.privacyURL) })
+                ListRow(label: .plain(title: UntranslatedL10n.commonContactUs),
+                        kind: .button { openURL(context.viewState.supportURL) })
             }
         }
         .compoundList()

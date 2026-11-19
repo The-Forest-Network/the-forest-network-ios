@@ -363,6 +363,7 @@
 		344E9D7152F00159C30AA116 /* CallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2800E2B0176674B065B870 /* CallScreen.swift */; };
 		34AABA683C4F447732F0B00B /* SpaceAddRoomsScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D2A164B420405BBAA7945C /* SpaceAddRoomsScreenViewModel.swift */; };
 		34D95CD0AA7D36FC2F047361 /* RoomDetailsScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED02856C0EC4FD62198300E6 /* RoomDetailsScreenViewModel.swift */; };
+		34F17A732891ED9E3D51C9B3 /* TermsAgreementScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24F483104146BB4B91AC707 /* TermsAgreementScreen.swift */; };
 		350E390ABEBB0E72A5A3059F /* TimelineMediaPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4014DCC3FA9BB7B5032906D /* TimelineMediaPreviewViewModel.swift */; };
 		351BE7629B5D6676FB0F452C /* JoinCallButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECC9EF2D8F9E68EB69B2AC6B /* JoinCallButton.swift */; };
 		3589445186CBB0C2ADC83158 /* VoiceMessageRoomPlaybackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BFF313E5DCFEE51251795E /* VoiceMessageRoomPlaybackView.swift */; };
@@ -2931,6 +2932,7 @@
 		D20AFCC11D7A34F4EEC59A09 /* RoomInviterLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomInviterLabel.swift; sourceTree = "<group>"; };
 		D23A34117B82CE8874714C18 /* SecureBackupKeyBackupScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureBackupKeyBackupScreenViewModel.swift; sourceTree = "<group>"; };
 		D24C6172FBA75FEA08115728 /* MapLibre.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MapLibre.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D24F483104146BB4B91AC707 /* TermsAgreementScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAgreementScreen.swift; sourceTree = "<group>"; };
 		D2BB77DD8E9B111469B0301D /* MediaEventsTimelineScreenViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaEventsTimelineScreenViewModelTests.swift; sourceTree = "<group>"; };
 		D2E27175D2A36BB8B10EBEC7 /* UITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F23E1A55091BE90B4282FC /* DeclineAndBlockScreenViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeclineAndBlockScreenViewModelTests.swift; sourceTree = "<group>"; };
@@ -4183,6 +4185,14 @@
 			path = Provider;
 			sourceTree = "<group>";
 		};
+		2B2EBC49D76AC4DD7E5B84F1 /* TermsAgreementScreen */ = {
+			isa = PBXGroup;
+			children = (
+				41D531A0DCADCDF52FF86D12 /* View */,
+			);
+			path = TermsAgreementScreen;
+			sourceTree = "<group>";
+		};
 		2B47E38AB6F183F483047986 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -4543,6 +4553,14 @@
 				F8D988500717DEF41D9F4C3C /* SupportingFiles */,
 			);
 			path = UITests;
+			sourceTree = "<group>";
+		};
+		41D531A0DCADCDF52FF86D12 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				D24F483104146BB4B91AC707 /* TermsAgreementScreen.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		42B85C1FA008989EC51A3EB6 /* RoomMembershipDetails */ = {
@@ -5303,6 +5321,7 @@
 				BC1F34F0B53482075E4333CC /* ServerSelectionScreen */,
 				3580A487E2539E2619008F1C /* SoftLogoutScreen */,
 				833AECE34F075503716A40B0 /* StartScreen */,
+				2B2EBC49D76AC4DD7E5B84F1 /* TermsAgreementScreen */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -9227,6 +9246,7 @@
 				4B76544E81F13DB29B67C112 /* TemplateScreenModels.swift in Sources */,
 				A990EBCD04A56A1B7F1CDF7F /* TemplateScreenViewModel.swift in Sources */,
 				12A65D419CC3EAFFC9CD53B4 /* TemplateScreenViewModelProtocol.swift in Sources */,
+				34F17A732891ED9E3D51C9B3 /* TermsAgreementScreen.swift in Sources */,
 				228D8FBBC51B33F865D776B7 /* TestablePreview.swift in Sources */,
 				4F7390C1E50E3865B7416F17 /* TestablePreviewsDictionary.swift in Sources */,
 				71BA6187335CEBCB65F8F932 /* TextBasedRoomTimelineItem.swift in Sources */,

@@ -1,3 +1,4 @@
+"common_contact_us" = "Contact us";
 "screen_home_tab_search" = "Search";
 "screen_onboarding_registration_button_title" = "I've been invited to the Village";
 "screen_onboarding_request_account_content_link" = "Find the trailhead";
@@ -8,6 +9,20 @@
 "screen_search_no_results_message" = "There are no results for “%1$@.” Try a new search term.";
 "screen_search_tab_chats" = "Chats";
 "screen_search_tab_messages" = "Messages";
+"screen_terms_agreement_agree_button" = "Agree and continue";
+"screen_terms_agreement_contact_message" = "Questions or concerns? Write to us at";
+"screen_terms_agreement_contact_title" = "Contact";
+"screen_terms_agreement_content_message" = "You own what you share, and you're responsible for having the right to share it.";
+"screen_terms_agreement_content_title" = "Your content";
+"screen_terms_agreement_decline_button" = "Decline";
+"screen_terms_agreement_intro" = "By signing in or registering you agree to these terms and to our Privacy Policy. If you don't agree, please don't use the app. These terms supplement the full Terms of Service on our website; where they differ, the website terms apply.";
+"screen_terms_agreement_reporting_block" = "Block any user from their profile. You'll no longer see their messages or invites.";
+"screen_terms_agreement_reporting_report" = "Report any message from its menu, or any room from its details.";
+"screen_terms_agreement_reporting_review" = "We review reports within 24 hours, remove content that breaks these terms, and remove the users responsible.";
+"screen_terms_agreement_reporting_title" = "Reporting and blocking";
+"screen_terms_agreement_title" = "Terms of Use";
+"screen_terms_agreement_tolerance_message" = "We have zero tolerance for objectionable content and abusive behaviour. You must not post or share content that is illegal, abusive, harassing, threatening, hateful, defamatory or sexually exploitative, and you must not spam, impersonate others or attack the service.";
+"screen_terms_agreement_tolerance_title" = "No tolerance for objectionable content or abusive users";
 "soft_logout_clear_data_dialog_content" = "Clear all data currently stored on this device?\nSign in again to access your account data and messages.";
 "soft_logout_clear_data_dialog_title" = "Clear data";
 "soft_logout_clear_data_notice" = "Warning: Your personal data (including encryption keys) is still stored on this device.\n\nClear it if you’re finished using this device, or want to sign in to another account.";
