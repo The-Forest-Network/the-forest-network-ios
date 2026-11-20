@@ -19,7 +19,7 @@
 "screen_terms_agreement_full_terms_link" = "Read the full Terms of Service";
 "screen_terms_agreement_intro" = "By signing in or registering you agree to these terms. If you don't agree, please don't use the app.";
 "screen_terms_agreement_reporting_block" = "Block any user from their profile. You'll no longer see their messages or invites.";
-"screen_terms_agreement_reporting_report" = "Report any message from its menu, or any room from its details.";
+"screen_terms_agreement_reporting_report" = "Report any message from its menu.";
 "screen_terms_agreement_reporting_review" = "We review reports within 24 hours, remove content that breaks these terms, and remove the users responsible.";
 "screen_terms_agreement_reporting_title" = "Reporting and blocking";
 "screen_terms_agreement_title" = "Terms of Use";

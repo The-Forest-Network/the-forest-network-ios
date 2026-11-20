@@ -58,7 +58,7 @@ internal nonisolated enum UntranslatedL10n {
   internal static var screenTermsAgreementIntro: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_intro") }
   /// Block any user from their profile. You'll no longer see their messages or invites.
   internal static var screenTermsAgreementReportingBlock: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_reporting_block") }
-  /// Report any message from its menu, or any room from its details.
+  /// Report any message from its menu.
   internal static var screenTermsAgreementReportingReport: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_reporting_report") }
   /// We review reports within 24 hours, remove content that breaks these terms, and remove the users responsible.
   internal static var screenTermsAgreementReportingReview: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_reporting_review") }
