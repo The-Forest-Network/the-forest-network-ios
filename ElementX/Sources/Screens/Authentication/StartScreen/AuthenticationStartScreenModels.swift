@@ -35,6 +35,11 @@ struct AuthenticationStartScreenViewState: BindableState {
     
     let hideBrandChrome: Bool
     
+    /// The contact details shown on the terms of use.
+    var supportEmailAddress = ""
+    var supportURL: URL?
+    var termsURL: URL?
+    
     var bindings = AuthenticationStartScreenViewStateBindings()
     
     var loginButtonTitle: String {
@@ -51,6 +56,8 @@ struct AuthenticationStartScreenViewState: BindableState {
 struct AuthenticationStartScreenViewStateBindings {
     var alertInfo: AlertInfo<AuthenticationStartScreenAlertType>?
     var showClassicAppBackupInstructions = false
+    /// Whether the terms of use are being presented before signing in or registering.
+    var showTerms = false
 }
 
 enum AuthenticationStartScreenAlertType {
@@ -62,6 +69,11 @@ enum AuthenticationStartScreenViewAction {
     case updateWindow(UIWindow)
     case developerOptions
     case reportProblem
+    
+    /// The user agreed to the terms of use, so continue with the action that was waiting on them.
+    case agreeToTerms
+    /// The user declined the terms of use, so stay on the start screen.
+    case declineTerms
     
     case loginWithQR
     case login
