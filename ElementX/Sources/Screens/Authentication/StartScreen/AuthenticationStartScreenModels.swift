@@ -38,6 +38,7 @@ struct AuthenticationStartScreenViewState: BindableState {
     /// The contact details shown on the terms of use.
     var supportEmailAddress = ""
     var supportURL: URL?
+    var termsURL: URL?
     
     var bindings = AuthenticationStartScreenViewStateBindings()
     

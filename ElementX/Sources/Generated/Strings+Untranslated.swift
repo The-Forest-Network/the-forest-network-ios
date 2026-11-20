@@ -50,7 +50,9 @@ internal nonisolated enum UntranslatedL10n {
   internal static var screenTermsAgreementContentTitle: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_content_title") }
   /// Decline
   internal static var screenTermsAgreementDeclineButton: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_decline_button") }
-  /// By signing in or registering you agree to these terms and to our Privacy Policy. If you don't agree, please don't use the app. These terms supplement the full Terms of Service on our website; where they differ, the website terms apply.
+  /// Read the full Terms of Service
+  internal static var screenTermsAgreementFullTermsLink: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_full_terms_link") }
+  /// By signing in or registering you agree to these terms. If you don't agree, please don't use the app.
   internal static var screenTermsAgreementIntro: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_intro") }
   /// Block any user from their profile. You'll no longer see their messages or invites.
   internal static var screenTermsAgreementReportingBlock: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_reporting_block") }

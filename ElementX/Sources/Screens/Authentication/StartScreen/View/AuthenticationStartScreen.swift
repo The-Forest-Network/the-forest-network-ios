@@ -25,9 +25,11 @@ struct AuthenticationStartScreen: View {
             }
         }
         .sheet(isPresented: $context.showTerms) {
-            if let supportURL = context.viewState.supportURL {
+            if let supportURL = context.viewState.supportURL,
+               let termsURL = context.viewState.termsURL {
                 TermsAgreementScreen(supportEmailAddress: context.viewState.supportEmailAddress,
                                      supportURL: supportURL,
+                                     termsURL: termsURL,
                                      onAgree: { context.send(viewAction: .agreeToTerms) },
                                      onDecline: { context.send(viewAction: .declineTerms) })
                     .interactiveDismissDisabled()

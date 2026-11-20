@@ -78,6 +78,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
         
         initialViewState.supportEmailAddress = appSettings.supportEmailAddress
         initialViewState.supportURL = appSettings.supportURL
+        initialViewState.termsURL = appSettings.acceptableUseURL
         
         super.init(initialViewState: initialViewState, mediaProvider: mediaProvider)
         

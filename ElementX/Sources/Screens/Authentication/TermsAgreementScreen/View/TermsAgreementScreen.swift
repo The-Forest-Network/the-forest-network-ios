@@ -13,6 +13,7 @@ import SwiftUI
 struct TermsAgreementScreen: View {
     let supportEmailAddress: String
     let supportURL: URL
+    let termsURL: URL
     let onAgree: () -> Void
     let onDecline: () -> Void
     
@@ -27,6 +28,10 @@ struct TermsAgreementScreen: View {
                 Text(UntranslatedL10n.screenTermsAgreementIntro)
                     .font(.compound.bodyMD)
                     .foregroundColor(.compound.textSecondary)
+                
+                Link(UntranslatedL10n.screenTermsAgreementFullTermsLink, destination: termsURL)
+                    .font(.compound.bodyMD)
+                    .foregroundColor(.compound.textLinkExternal)
                 
                 section(title: UntranslatedL10n.screenTermsAgreementToleranceTitle) {
                     Text(UntranslatedL10n.screenTermsAgreementToleranceMessage)
@@ -106,6 +111,7 @@ struct TermsAgreementScreen_Previews: PreviewProvider, TestablePreview {
     static var previews: some View {
         TermsAgreementScreen(supportEmailAddress: "support@theforestnetwork.earth",
                              supportURL: "mailto:support@theforestnetwork.earth",
+                             termsURL: "https://theforestnetwork.earth/village/terms",
                              onAgree: { },
                              onDecline: { })
     }
