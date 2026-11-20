@@ -18,7 +18,7 @@ struct LegalInformationScreen: View {
             Section {
                 ListRow(label: .plain(title: L10n.commonCopyright),
                         kind: .button { openURL(context.viewState.copyrightURL) })
-                ListRow(label: .plain(title: L10n.commonAcceptableUsePolicy),
+                ListRow(label: .plain(title: UntranslatedL10n.commonTermsOfService),
                         kind: .button { openURL(context.viewState.acceptableUseURL) })
                 ListRow(label: .plain(title: L10n.commonPrivacyPolicy),
                         kind: .button { openURL(context.viewState.privacyURL) })

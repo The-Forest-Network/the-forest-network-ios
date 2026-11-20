@@ -12,6 +12,8 @@ import Foundation
 internal nonisolated enum UntranslatedL10n {
   /// Contact us
   internal static var commonContactUs: String { return UntranslatedL10n.tr("Untranslated", "common_contact_us") }
+  /// Terms of Service
+  internal static var commonTermsOfService: String { return UntranslatedL10n.tr("Untranslated", "common_terms_of_service") }
   /// Search
   internal static var screenHomeTabSearch: String { return UntranslatedL10n.tr("Untranslated", "screen_home_tab_search") }
   /// I've been invited to the Village
