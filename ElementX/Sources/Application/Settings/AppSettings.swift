@@ -162,6 +162,10 @@ final nonisolated class AppSettings: @unchecked Sendable {
     private(set) var acceptableUseURL: URL = "https://theforestnetwork.earth/village/terms"
     /// A URL that contains the app's Privacy Policy.
     private(set) var privacyURL: URL = "https://theforestnetwork.earth/village/privacy"
+    /// The address users can write to with questions or concerns about the app or abusive content.
+    let supportEmailAddress = "support@theforestnetwork.earth"
+    /// A `mailto:` URL for ``supportEmailAddress``.
+    private(set) var supportURL: URL = "mailto:support@theforestnetwork.earth"
     /// A URL where people without an account can request one, since accounts aren't self-served.
     private(set) var requestAccountURL: URL = "https://theforestnetwork.earth/village/join"
     /// A URL where users can go read more about encryption in general.
@@ -192,6 +196,19 @@ final nonisolated class AppSettings: @unchecked Sendable {
     
     var defaultServer: String {
         previousServers.first ?? accountProviders[0]
+    }
+    
+    // MARK: - Terms of Use
+    
+    /// The version of the in-app Terms of Use. Bump it whenever the terms change materially
+    /// so that everyone is asked to agree again.
+    let currentTermsVersion = 1
+    /// The version of the Terms of Use the user last agreed to, or 0 if they haven't agreed yet.
+    @UserPreference(defaultValue: 0)
+    var acceptedTermsVersion: Int
+    
+    var hasAcceptedCurrentTerms: Bool {
+        acceptedTermsVersion >= currentTermsVersion
     }
     
     // MARK: - Security

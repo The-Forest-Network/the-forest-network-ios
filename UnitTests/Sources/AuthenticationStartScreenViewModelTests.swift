@@ -27,6 +27,8 @@ final class AuthenticationStartScreenViewModelTests {
     
     init() {
         appSettings = AppSettings.volatile()
+        // Most tests aren't about the terms of use, so start from the point where they've already been agreed to.
+        appSettings.acceptedTermsVersion = appSettings.currentTermsVersion
     }
     
     @Test
@@ -329,6 +331,85 @@ final class AuthenticationStartScreenViewModelTests {
         
         // Then the flow should continue the login process.
         try await deferredAction.fulfill()
+    }
+    
+    // MARK: - Terms of use
+    
+    @Test
+    func termsArePresentedBeforeSigningIn() async {
+        // Given a user who hasn't agreed to the terms of use.
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel()
+        appSettings.acceptedTermsVersion = 0
+        #expect(!context.showTerms)
+        
+        // When they tap login, the terms are shown instead and the flow doesn't start.
+        context.send(viewAction: .login)
+        #expect(context.showTerms)
+        #expect(!appSettings.hasAcceptedCurrentTerms)
+        #expect(clientFactory.makeClientHomeserverAddressSessionDirectoriesPassphraseClientSessionDelegateAppSettingsAppHooksCallsCount == 0)
+    }
+    
+    @Test
+    func termsAreNotPresentedForOtherActions() async {
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel()
+        appSettings.acceptedTermsVersion = 0
+        
+        context.send(viewAction: .reportProblem)
+        #expect(!context.showTerms)
+    }
+    
+    @Test
+    func agreeingToTermsContinuesTheWaitingAction() async throws {
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel()
+        appSettings.acceptedTermsVersion = 0
+        
+        // When agreeing to the terms after tapping a button.
+        let deferred = deferFulfillment(viewModel.actions) { $0 == .loginWithQR }
+        context.send(viewAction: .loginWithQR)
+        #expect(context.showTerms)
+        context.send(viewAction: .agreeToTerms)
+        
+        // Then the terms are remembered and the original action carries on.
+        try await deferred.fulfill()
+        #expect(!context.showTerms)
+        #expect(appSettings.hasAcceptedCurrentTerms)
+        
+        // And future taps no longer show the terms.
+        context.send(viewAction: .loginWithQR)
+        #expect(!context.showTerms)
+    }
+    
+    @Test
+    func decliningTermsStaysOnTheStartScreen() async {
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel()
+        appSettings.acceptedTermsVersion = 0
+        
+        // When declining the terms.
+        context.send(viewAction: .loginWithQR)
+        context.send(viewAction: .declineTerms)
+        
+        // Then nothing is remembered and the terms come back next time.
+        #expect(!context.showTerms)
+        #expect(!appSettings.hasAcceptedCurrentTerms)
+        context.send(viewAction: .register)
+        #expect(context.showTerms)
+    }
+    
+    @Test
+    func updatedTermsAreShownAgain() async {
+        setAllowedAccountProviders(["company.com"])
+        await setupViewModel()
+        
+        // Given a user who agreed to an older version of the terms.
+        appSettings.acceptedTermsVersion = appSettings.currentTermsVersion - 1
+        
+        // When they tap a button, they're asked again.
+        context.send(viewAction: .loginWithQR)
+        #expect(context.showTerms)
     }
     
     // MARK: - Helpers

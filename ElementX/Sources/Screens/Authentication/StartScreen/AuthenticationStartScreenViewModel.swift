@@ -16,8 +16,11 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
     private let provisioningParameters: AccountProvisioningParameters?
     private let appMediator: AppMediatorProtocol
     private let userIndicatorController: UserIndicatorControllerProtocol
+    private let appSettings: AppSettings
     
     private let canReportProblem: Bool
+    /// The sign in or registration action that's waiting for the user to agree to the terms of use.
+    private var pendingViewAction: AuthenticationStartScreenViewAction?
     
     private var actionsSubject: PassthroughSubject<AuthenticationStartScreenViewModelAction, Never> = .init()
     
@@ -37,6 +40,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
         self.provisioningParameters = provisioningParameters
         self.appMediator = appMediator
         self.userIndicatorController = userIndicatorController
+        self.appSettings = appSettings
         canReportProblem = isBugReportServiceEnabled
         
         let isQRCodeScanningSupported = !ProcessInfo.processInfo.isiOSAppOnMac
@@ -44,7 +48,7 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
         let isClassicAppAccountAllowed = classicAppAccountProvider.map { appSettings.accountProviders.contains($0) } ?? false
         let requestAccountMessage = Self.makeRequestAccountMessage(url: appSettings.requestAccountURL)
         
-        let initialViewState = if !appSettings.allowOtherAccountProviders {
+        var initialViewState = if !appSettings.allowOtherAccountProviders {
             // Custom providers are disallowed, but the locked-in provider(s) may still support
             // self-service registration (e.g. via a MAS-hosted sign-up page), so the create
             // account button's visibility still follows `showCreateAccountButton`.
@@ -72,6 +76,10 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
                                                hideBrandChrome: appSettings.hideBrandChrome)
         }
         
+        initialViewState.supportEmailAddress = appSettings.supportEmailAddress
+        initialViewState.supportURL = appSettings.supportURL
+        initialViewState.termsURL = appSettings.acceptableUseURL
+        
         super.init(initialViewState: initialViewState, mediaProvider: mediaProvider)
         
         notificationCenter.publisher(for: UIApplication.didBecomeActiveNotification)
@@ -82,6 +90,13 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
     }
     
     override func process(viewAction: AuthenticationStartScreenViewAction) {
+        // Anything that signs in or registers needs the user to have agreed to the terms of use first.
+        if requiresTermsAgreement(for: viewAction), !appSettings.hasAcceptedCurrentTerms {
+            pendingViewAction = viewAction
+            state.bindings.showTerms = true
+            return
+        }
+        
         switch viewAction {
         case .updateWindow(let window):
             guard state.window != window else { return }
@@ -92,6 +107,16 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
             }
         case .developerOptions:
             actionsSubject.send(.developerOptions)
+            
+        case .agreeToTerms:
+            appSettings.acceptedTermsVersion = appSettings.currentTermsVersion
+            state.bindings.showTerms = false
+            guard let pendingViewAction else { return }
+            self.pendingViewAction = nil
+            process(viewAction: pendingViewAction)
+        case .declineTerms:
+            pendingViewAction = nil
+            state.bindings.showTerms = false
             
         case .loginWithQR:
             actionsSubject.send(.loginWithQR)
@@ -115,6 +140,15 @@ class AuthenticationStartScreenViewModel: AuthenticationStartScreenViewModelType
     }
     
     // MARK: - Private
+    
+    private func requiresTermsAgreement(for viewAction: AuthenticationStartScreenViewAction) -> Bool {
+        switch viewAction {
+        case .loginWithQR, .login, .register, .continueWithClassic:
+            true
+        default:
+            false
+        }
+    }
     
     private static func makeRequestAccountMessage(url: URL) -> AttributedString {
         let linkPlaceholder = "{link}"

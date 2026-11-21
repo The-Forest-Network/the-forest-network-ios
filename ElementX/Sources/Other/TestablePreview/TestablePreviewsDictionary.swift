@@ -184,6 +184,7 @@ enum TestablePreviewsDictionary {
             "StaticLocationSheet_Previews" : StaticLocationSheet_Previews.self,
             "StickerRoomTimelineView_Previews" : StickerRoomTimelineView_Previews.self,
             "SwipeRightAction_Previews" : SwipeRightAction_Previews.self,
+            "TermsAgreementScreen_Previews" : TermsAgreementScreen_Previews.self,
             "TextRoomTimelineView_Previews" : TextRoomTimelineView_Previews.self,
             "ThreadDecorator_Previews" : ThreadDecorator_Previews.self,
             "TimelineDeliveryStatusView_Previews" : TimelineDeliveryStatusView_Previews.self,

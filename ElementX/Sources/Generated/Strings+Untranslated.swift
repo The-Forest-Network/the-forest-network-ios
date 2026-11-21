@@ -10,6 +10,10 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal nonisolated enum UntranslatedL10n {
+  /// Contact us
+  internal static var commonContactUs: String { return UntranslatedL10n.tr("Untranslated", "common_contact_us") }
+  /// Terms of Service
+  internal static var commonTermsOfService: String { return UntranslatedL10n.tr("Untranslated", "common_terms_of_service") }
   /// Search
   internal static var screenHomeTabSearch: String { return UntranslatedL10n.tr("Untranslated", "screen_home_tab_search") }
   /// I've been invited to the Village
@@ -36,6 +40,36 @@ internal nonisolated enum UntranslatedL10n {
   internal static var screenSearchTabChats: String { return UntranslatedL10n.tr("Untranslated", "screen_search_tab_chats") }
   /// Messages
   internal static var screenSearchTabMessages: String { return UntranslatedL10n.tr("Untranslated", "screen_search_tab_messages") }
+  /// Agree and continue
+  internal static var screenTermsAgreementAgreeButton: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_agree_button") }
+  /// Questions or concerns? Write to us at
+  internal static var screenTermsAgreementContactMessage: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_contact_message") }
+  /// Contact
+  internal static var screenTermsAgreementContactTitle: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_contact_title") }
+  /// You own what you share, and you're responsible for having the right to share it.
+  internal static var screenTermsAgreementContentMessage: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_content_message") }
+  /// Your content
+  internal static var screenTermsAgreementContentTitle: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_content_title") }
+  /// Decline
+  internal static var screenTermsAgreementDeclineButton: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_decline_button") }
+  /// Read the full Terms of Service
+  internal static var screenTermsAgreementFullTermsLink: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_full_terms_link") }
+  /// By signing in or registering you agree to these terms. If you don't agree, please don't use the app.
+  internal static var screenTermsAgreementIntro: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_intro") }
+  /// Block any user from their profile. You'll no longer see their messages or invites.
+  internal static var screenTermsAgreementReportingBlock: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_reporting_block") }
+  /// Report any message from its menu.
+  internal static var screenTermsAgreementReportingReport: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_reporting_report") }
+  /// We review reports within 24 hours, remove content that breaks these terms, and remove the users responsible.
+  internal static var screenTermsAgreementReportingReview: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_reporting_review") }
+  /// Reporting and blocking
+  internal static var screenTermsAgreementReportingTitle: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_reporting_title") }
+  /// Terms of Use
+  internal static var screenTermsAgreementTitle: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_title") }
+  /// We have zero tolerance for objectionable content and abusive behaviour. You must not post or share content that is illegal, abusive, harassing, threatening, hateful, defamatory or sexually exploitative, and you must not spam, impersonate others or attack the service.
+  internal static var screenTermsAgreementToleranceMessage: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_tolerance_message") }
+  /// No tolerance for objectionable content or abusive users
+  internal static var screenTermsAgreementToleranceTitle: String { return UntranslatedL10n.tr("Untranslated", "screen_terms_agreement_tolerance_title") }
   /// Clear all data currently stored on this device?
   /// Sign in again to access your account data and messages.
   internal static var softLogoutClearDataDialogContent: String { return UntranslatedL10n.tr("Untranslated", "soft_logout_clear_data_dialog_content") }

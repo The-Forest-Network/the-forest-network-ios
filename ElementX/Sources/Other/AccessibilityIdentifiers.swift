@@ -22,6 +22,7 @@ enum A11yIdentifiers {
     static let homeScreen = HomeScreen()
     static let loginScreen = LoginScreen()
     static let authenticationStartScreen = AuthenticationStartScreen()
+    static let termsAgreementScreen = TermsAgreementScreen()
     static let reportContent = ReportContent()
     static let joinRoomScreen = JoinRoomScreen()
     static let roomScreen = RoomScreen()
@@ -137,6 +138,11 @@ enum A11yIdentifiers {
         let signInWithQr = "authentication_start-sign_in_with_qr"
         let appVersion = "authentication_start-app_version"
         let hidden = "authentication_start-hidden"
+    }
+    
+    struct TermsAgreementScreen {
+        let agree = "terms_agreement-agree"
+        let decline = "terms_agreement-decline"
     }
     
     struct ReportContent {
