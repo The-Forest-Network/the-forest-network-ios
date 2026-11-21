@@ -29,9 +29,9 @@ Copy this checklist into a new issue for each App Store submission. Delete anyth
 ## Test the uploaded build
 
 - [ ] Install from TestFlight on a physical device.
-- [ ] Sign in on a fresh install, including the terms sheet.
-- [ ] Report a message, block a user, and unblock them.
-- [ ] Settings → About links (terms, contact) open.
+- [ ] Sign in and out on a fresh install.
+- [ ] Send and receive messages, including in an encrypted room.
+- [ ] Safety features App Review expects still work: terms shown before signing in, reporting, blocking, and a reachable contact address.
 - [ ] Push notifications, calls and anything else this release touched.
 
 ## App Store Connect
